@@ -26,48 +26,78 @@
 <h1 align="middle">CS 184/284A: Computer Graphics and Imaging, Spring 2024</h1>
 <h1 align="middle">Homework 1: Rasterizer</h1>
 <h2 align="middle">Sylvia Chen, Artem Shumay</h2>
+<div align="middle"> 
+	<p><a href="https://cal-cs184-student.github.io/hw-webpages-sp24-sylviacx/hw1/index.html">https://cal-cs184-student.github.io/hw-webpages-sp24-sylviacx/hw1/index.html</a>
+	</p>
+</div>
 
 <br><br>
 
 <div>
 
 <h2 align="middle">Overview</h2>
-<p>Give a high-level overview of what you implemented in this homework Think about what you've built as a whole. Share your thoughts on what interesting things you've learned from completing the homework.</p>
+<p> We implemented several rasterization techniques that translate SVG files onto a display. Through these exercises, we gained a lot of experience on various sampling techniques, mipmaps, 
+    and transforms. This homework was especially interesting because we were building new techniques on top of previous implemetations of simpler methods. It was interesting to see how minor 
+    bugs in earlier tasks would go unnoticed, but would completely break later tests. It was interesting to see how these minor bugs gave almost no indication of 
+    problems in the test images, but would completeley break later tasks. </p>
 
 <h2 align="middle">Section I: Rasterization</h2>
 
 <h3 align="middle">Part 1: Rasterizing single-color triangles</h3>
 
-<p>Here is an example 2x2 gridlike structure using an HTML table. Each <b>tr</b> is a row and each <b>td</b> is a column in that row. You might find this useful for framing and showing your result images in an organized fashion.</p>
+<p> First, we checked the winding direction of the triangle vertices and swapped the direction accordingly if needed. Then, we calculated the bounding box containing the input triangle so that
+    we could optimize the runtime by iterating through all the pixels within that box. </p>
+
+<p> We checked if each pixel was inside the triangle by passing the midpoint of each pixel into our helper function is_inside_triangle(). This function used the Three Line Test we covered in 
+	Lecture 2 to check if the given point was inside all 3 edges of the triangle. For each edge (x0, y0), (x1, y1), and (x2, y2), we checked if the following condition was true:</p>
+<div style="text-align: center;">
+	<span style="font-size: 20px;"><b>L(px, py) >= - (px - X<sub>i</sub>) * (y1 - Y<sub>i</sub>) + (y - Y<sub>i</sub>) * (x1 - X<sub>i</sub>)</b></span>
+</div>
+
+<p> If this condition was true for all 3 edges, we filled the pixel with the input color. On each pixel, we are computing a constant number of arithmetic operations in our is_inside_triangle 
+	function, so the runtime of processing each pixel is O(1). We process bw * bh pixels, where bw and bh are the width and heigh respectively of the bounding box. Thus, the overall runtime
+	of our algorithm is O(bw * bh), which is at least as efficient as sampling only within the bounding box of the triangle. </p>
 
 <div align="middle">
   <table style="width=100%">
     <tr>
       <td>
-        <img src="images/image1.png" align="middle" width="400px"/>
-        <figcaption align="middle">Caption goes here.</figcaption>
+        <img src="images/task1_test4.png" align="middle" width="400px"/>
+        <figcaption align="middle">Figure 1: Test 4 output for Task 1.</figcaption>
       </td>
       <td>
-        <img src="images/image2.png" align="middle" width="400px"/>
-        <figcaption align="middle">Caption goes here.</figcaption>
-      </td>
-    </tr>
-    <br>
-    <tr>
-      <td>
-        <img src="images/image3.png" align="middle" width="400px"/>
-        <figcaption align="middle">Caption goes here.</figcaption>
-      </td>
-      <td>
-        <img src="images/image4.png" align="middle" width="400px"/>
-        <figcaption align="middle">Caption goes here.</figcaption>
-      </td>
     </tr>
   </table>
 </div>
 
 
 <h3 align="middle">Part 2: Antialiasing triangles</h3>
+
+<div align="middle">
+	<table style="width=100%">
+	  <tr>
+		<td>
+		  <img src="images/image1.png" align="middle" width="400px"/>
+		  <figcaption align="middle">Figure 1: Test 4 output for Task 1.</figcaption>
+		</td>
+		<td>
+		  <img src="images/image2.png" align="middle" width="400px"/>
+		  <figcaption align="middle">Caption goes here.</figcaption>
+		</td>
+	  </tr>
+	  <br>
+	  <tr>
+		<td>
+		  <img src="images/image3.png" align="middle" width="400px"/>
+		  <figcaption align="middle">Caption goes here.</figcaption>
+		</td>
+		<td>
+		  <img src="images/image4.png" align="middle" width="400px"/>
+		  <figcaption align="middle">Caption goes here.</figcaption>
+		</td>
+	  </tr>
+	</table>
+  </div>
 
 
 
