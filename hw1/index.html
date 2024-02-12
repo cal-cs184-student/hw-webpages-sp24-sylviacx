@@ -62,8 +62,8 @@
   <table style="width=100%">
     <tr>
       <td>
-        <img src="images/task1_test4.png" align="middle" width="400px"/>
-        <figcaption align="middle">Figure 1: Test 4 output for Task 1.</figcaption>
+        <img src="images/task1_test4.png" align="middle" width="800px"/>
+		<figcaption align="middle">Figure 1: Rasterization of test4 image.</figcaption>
       </td>
       <td>
     </tr>
@@ -73,27 +73,35 @@
 
 <h3 align="middle">Part 2: Antialiasing triangles</h3>
 
+<p> In this part, we had to make a few modifications to our algorithm in Part 1 in order to support supersampling. In supersampling, instead of taking a single point within a pixel as reference, 
+	we need to take <code>sample_rate</code> number of points within each pixel. This gives us more information to determine the color value of a pixel by averaging from multiple points within a 
+	single pixel. Thus, if for example, a pixel is cut in half by the edge of a triangle, with half the pixel inside the triangle and the other half outside, supersampling will average the color 
+	from both the inside and the outside of the triangle. This smooths out jagged edges (jaggies) by making edges appear less distinct. </p>
+	
+<p> In order to implement this, we essentially needed to upscale the original image by a factor of sqrt(sample_rate), fill the sample buffer, then downsample the sample buffer data into the frame 
+	buffer by averaging sqrt(sample_size) x sqrt(sample_size) size sections from the sample buffer into single frame buffer pixels. To make the sample buffer the appropriate size, we modified 
+	set_sample_rate(), set_framebuffer_target(), and fill_pixel() to support a sample buffer of size <code>width * height * sample_rate</code>. In order to upscale the original image, we needed 
+	to add more looping logic in rasterize_point() to iterate <code>sqrt(sample_rate)</code> times in the x and y direction of each point, sampling a total of <code>sample_rate</code> points within 
+	each pixel. Then, we also modified <code>resolve_to_framebuffer()</code> to translate from the higher dimensional <code>sample_buffer</code> to the <code>rgb_framebuffer_target</code>. Instead of 
+	a 1:1 pixel translation, to determine the color of a certain frame buffer pixel we needed to loop through all supersampled points taken from that pixel and average their color values.</p>
+
 <div align="middle">
 	<table style="width=100%">
 	  <tr>
 		<td>
-		  <img src="images/image1.png" align="middle" width="400px"/>
-		  <figcaption align="middle">Figure 1: Test 4 output for Task 1.</figcaption>
+		  <img src="images/task2_test4_ss1.png" align="middle" width="600px"/>
+		  <figcaption align="middle">Figure 2: Supersampling 1 pt per pixel.</figcaption>
 		</td>
 		<td>
-		  <img src="images/image2.png" align="middle" width="400px"/>
-		  <figcaption align="middle">Caption goes here.</figcaption>
+		  <img src="images/task2_test4_ss4.png" align="middle" width="600px"/>
+		  <figcaption align="middle">Figure 3: Supersampling 4 pts per pixel.</figcaption>
 		</td>
 	  </tr>
 	  <br>
 	  <tr>
 		<td>
-		  <img src="images/image3.png" align="middle" width="400px"/>
-		  <figcaption align="middle">Caption goes here.</figcaption>
-		</td>
-		<td>
-		  <img src="images/image4.png" align="middle" width="400px"/>
-		  <figcaption align="middle">Caption goes here.</figcaption>
+		  <img src="images/task2_test4_ss16.png" align="middle" width="600px"/>
+		  <figcaption align="middle">Figure 4: Supersampling 16 pts per pixel.</figcaption>
 		</td>
 	  </tr>
 	</table>
