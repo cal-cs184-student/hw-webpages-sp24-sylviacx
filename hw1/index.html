@@ -66,7 +66,6 @@
         <img src="images/task1_test4.png" align="middle" width="800px"/>
 		<figcaption align="middle">Figure 1: Rasterization of test4 image.</figcaption>
       </td>
-      <td>
     </tr>
   </table>
 </div>
@@ -97,12 +96,9 @@
 		  <img src="images/task2_test4_ss4.png" align="middle" width="600px"/>
 		  <figcaption align="middle">Figure 3: Supersampling 4 pts per pixel.</figcaption>
 		</td>
-	  </tr>
-	  <br>
-	  <tr>
 		<td>
-		  <img src="images/task2_test4_ss16.png" align="middle" width="600px"/>
-		  <figcaption align="middle">Figure 4: Supersampling 16 pts per pixel.</figcaption>
+			<img src="images/task2_test4_ss16.png" align="middle" width="600px"/>
+			<figcaption align="middle">Figure 4: Supersampling 16 pts per pixel.</figcaption>
 		</td>
 	  </tr>
 	</table>
@@ -118,18 +114,40 @@
 	<table style="width=100%">
 	  <tr>
 		<td>
-		  <img src="images/task3_robot.png" align="middle" width="800px"/>
+		  <img src="images/task3_robot.png" align="middle" width="400px"/>
 		  <figcaption align="middle">Figure 5: Robot cosplaying Guido Mista.</figcaption>
 		</td>
 		<td>
+			<img src="images/task3_mista.png" align="middle" width="600px"/>
+			<figcaption align="middle">Figure 6: Guido Mista.</figcaption>
+		</td>
 	  </tr>
 	</table>
-  </div>
+</div>
 
 <h2 align="middle">Section II: Sampling</h2>
 
 <h3 align="middle">Part 4: Barycentric coordinates</h3>
+<p> Barycentric coordinates allow us to easily linearly interpolate some feature of the triangle, in this case color, at a certain point (x, y). Given a triangle wth 3 vertices A, B, and C, we can use 
+	the Barycentric coordinate formula to calculate (α, β, γ) such that the color at the point (x, y) is given as α * A + β * B + γ * C. α, β, and γ are proportional to the distance between point (x, y) 
+	and each of the 3 corners respectively, thus Barycentric coordinates allow us to calculate the color at point (x, y) using a weighted average of the colors at the 3 corners. For example, in Figure 7
+	below, the triangle has corners colored red, green, and blue, resulting in a gradient mix of colors within the triangle. Points closer to the corners would have colors closer to the respective corner's
+	color. </p>
 
+<div align="middle">
+	<table style="width=100%">
+	  <tr>
+		<td>
+		  <img src="images/task4_triangle.png" align="middle" width="400px"/>
+		  <figcaption align="middle">Figure 7: Triangle with RGB gradient.</figcaption>
+		</td>
+		<td>
+			<img src="images/task4_test7.png" align="middle" width="600px"/>
+			<figcaption align="middle">Figure 8: Test 7 Colorwheel.</figcaption>
+		</td>
+	  </tr>
+	</table>
+</div>
 
 <h3 align="middle">Part 5: "Pixel sampling" for texture mapping</h3>
 
