@@ -133,7 +133,7 @@
 
 <h3 align="middle">Part 4: Barycentric coordinates</h3>
 <p> Barycentric coordinates allow us to easily linearly interpolate some feature of the triangle, in this case color, at a certain point (x, y). Given a triangle wth 3 vertices A, B, and C, we can use 
-	the Barycentric coordinate formula to calculate (α, β, γ) such that the color at the point (x, y) is given as α * A + β * B + γ * C. α, β, and γ are proportional to the distance between point (x, y) 
+	the Barycentric coordinate formula to calculate <b>(α, β, γ)</b> such that the color at the point (x, y) is given as <b>α * A + β * B + γ * C</b>. α, β, and γ are proportional to the distance between point (x, y) 
 	and each of the 3 corners respectively, thus Barycentric coordinates allow us to calculate the color at point (x, y) using a weighted average of the colors at the 3 corners. For example, in Figure 7
 	below, the triangle has corners colored red, green, and blue, resulting in a gradient mix of colors within the triangle. Points closer to the corners would have colors closer to the respective corner's
 	color. </p>
@@ -157,7 +157,7 @@
 </div>
 
 <h3 align="middle">Part 5: "Pixel sampling" for texture mapping</h3>
-<p> In this part, we built on top the Barycentric coordinate algorithm from part 4 to perform pixel sampling. Similar to part 4, we calculated Barycentric coordinates α, β, and γ and used them to interpolate
+<p> In this part, we built on top the Barycentric coordinate algorithm from part 4 to perform pixel sampling. Similar to part 4, we calculated Barycentric coordinates <b>α, β, and γ</b> and used them to interpolate
 	u0 and v0. Then, we passed u0 and v0 as a 2D vector uv into one of the two pixel sampling functions, nearest pixel-sampling or bilinear sampling. </p>
 
 <p> In nearest pixel-sampling, we scaled uv's x and y values by the texture map's dimensions, floored the coordinates to get the nearest neighbor, and finally clamped the point to the 
@@ -177,25 +177,25 @@
 	<table style="width=100%">
 	  <tr>
 		<td>
-		  <img src="images/task5_nn_ss1.png" align="middle" width="600px"/>
+		  <img src="images/task5_nn_ss1.png" align="middle" width="400px"/>
 		  <figcaption align="middle">Figure 9: Nearest pixel-sampling with supersampling 1 pt per pixel.</figcaption>
 		</td>
 		<td>
-		  <img src="images/task5_nn_ss16.png" align="middle" width="600px"/>
+		  <img src="images/task5_nn_ss16.png" align="middle" width="400px"/>
 		  <figcaption align="middle">Figure 10: Nearest pixel-sampling with supersampling 16 pts per pixel.</figcaption>
 		</td>
 	  </tr>
 	  <br>
 	  <tr>
 		<td>
-		  <img src="images/task5_bs_ss1.png" align="middle" width="600px"/>
+		  <img src="images/task5_bs_ss1.png" align="middle" width="400px"/>
 		  <figcaption align="middle">Figure 11: Bilinear sampling with supersampling 1 pt per pixel.</figcaption>
 		</td>
 	  </tr>
 	  <tr>
 		<td>
-		  <img src="images/task5_bs_ss16.png" align="middle" width="600px"/>
-		  <figcaption align="middle">Figure 4: Bilinear sampling with supersampling 16 pts per pixel.</figcaption>
+		  <img src="images/task5_bs_ss16.png" align="middle" width="400px"/>
+		  <figcaption align="middle">Figure 12: Bilinear sampling with supersampling 16 pts per pixel.</figcaption>
 		</td>
 	  </tr>
 	</table>
