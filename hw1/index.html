@@ -38,8 +38,7 @@
 <h2 align="middle">Overview</h2>
 <p> We implemented several rasterization techniques that translate SVG files onto a display. Through these exercises, we gained a lot of experience on various sampling techniques, mipmaps, 
     and transforms. This homework was especially interesting because we were building new techniques on top of previous implemetations of simpler methods. It was interesting to see how minor 
-    bugs in earlier tasks would go unnoticed, but would completely break later tests. It was interesting to see how these minor bugs gave almost no indication of 
-    problems in the test images, but would completeley break later tasks. </p>
+    bugs in earlier tasks would go unnoticed, but would completely break later tests. </p>
 
 
 <h2 align="middle">Section I: Rasterization</h2>
@@ -139,7 +138,7 @@
 	color. </p>
 
 <p> To do this, we first preprocessed the input triangle in the same way as we explained for part 2. However, instead of filling the pixel with a color provided in the input, we used the Barycentric 
-	coordinate formula to first calculate α, β, and γ. Then we interpolated the color at the pixel using the formula α * A + β * B + γ * C. This is the color we input into fill_pixel(). </p>
+	coordinate formula to first calculate α, β, and γ. Then we interpolated the color at the pixel using the formula α * A + β * B + γ * C. This is the color we input into <code>fill_pixel()</code>. </p>
 
 <div align="middle">
 	<table style="width=100%">
@@ -164,13 +163,13 @@
 	dimensions of the texture map. These texture pixel coordinates were then passed into get_texel() to retrieve the color. </p>
 
 <p> In bilinear sampling, we scaled uv's x and y values by the texture map's dimensions, rounded the coordinates, and finally clamped the point to the dimensions of the texture map. The resulting 
-	coordinates represent the center of uv's nearest 4 pixel section. We will use these 4 neighboring pixels to generate the color value for uv. First, we calculate the linear interpolations of 
+	coordinates represent the center of uv's nearest 4 pixel section. We use these 4 neighboring pixels to generate the color value for uv. First, we calculate the linear interpolations of 
 	the top two neighbors and the bottom two neighbors. Then, we take the linear interpolation of those 2 values to get the final color value for uv. </p>
 
 <p> The major difference between nearest pixel-sampling and bilinear sampling is that nearest takes the color value at the single nearest pixel, while bilinear sampling takes an average of 4 neighboring 
 	pixels. From the figures below, we can see that with a supersampling rate of 1, bilinear sampling results in smoother edges than nearest. However, at a supersampling rate of 16, bilinear and nearest actually 
-	produce pretty similar images. This is because supersampling already does some smoothing within each pixel so the additional smoothing from bilinear sampling is harder to differentiate. Thus, we can 
-	expect to observe a large difference between these 2 sampling methods when the texture has many small details and edges. Bilinear sampling will be able to average out multiple pixel textures to smooth out 
+	produce much more similar images. This is because supersampling already does a lot of smoothing within each pixel so the additional smoothing from bilinear sampling is less prominent. Thus, we can 
+	expect to observe a large difference between these 2 sampling methods when the texture has many small details/edges and low supersampling is used. Bilinear sampling will be able to average out multiple pixel textures to smooth out 
 	jaggies along those features but nearest will not. </p>
 
 <div align="middle">
@@ -205,13 +204,6 @@
 
 
 <h3 align="middle">Part 6: "Level sampling" with mipmaps for texture mapping</h3>
-
-
-
-<h2 align="middle">Section III: Art Competition</h2>
-<p>If you are not participating in the optional art competition, don't worry about this section!</p>
-
-<h3 align="middle">Part 7: Draw something interesting!</h3>
 
 </body>
 </html>
