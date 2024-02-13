@@ -138,6 +138,9 @@
 	below, the triangle has corners colored red, green, and blue, resulting in a gradient mix of colors within the triangle. Points closer to the corners would have colors closer to the respective corner's
 	color. </p>
 
+<p> To do this, we first preprocessed the input triangle in the same way as we explained for part 2. However, instead of filling the pixel with a color provided in the input, we used the Barycentric 
+	coordinate formula to first calculate α, β, and γ. Then we interpolated the color at the pixel using the formula α * A + β * B + γ * C. This is the color we input into fill_pixel(). </p>
+
 <div align="middle">
 	<table style="width=100%">
 	  <tr>
@@ -154,6 +157,49 @@
 </div>
 
 <h3 align="middle">Part 5: "Pixel sampling" for texture mapping</h3>
+<p> In this part, we built on top the Barycentric coordinate algorithm from part 4 to perform pixel sampling. Similar to part 4, we calculated Barycentric coordinates α, β, and γ and used them to interpolate
+	u0 and v0. Then, we passed u0 and v0 as a 2D vector uv into one of the two pixel sampling functions, nearest pixel-sampling or bilinear sampling. </p>
+
+<p> In nearest pixel-sampling, we scaled uv's x and y values by the texture map's dimensions, floored the coordinates to get the nearest neighbor, and finally clamped the point to the 
+	dimensions of the texture map. These texture pixel coordinates were then passed into get_texel() to retrieve the color. </p>
+
+<p> In bilinear sampling, we scaled uv's x and y values by the texture map's dimensions, rounded the coordinates, and finally clamped the point to the dimensions of the texture map. The resulting 
+	coordinates represent the center of uv's nearest 4 pixel section. We will use these 4 neighboring pixels to generate the color value for uv. First, we calculate the linear interpolations of 
+	the top two neighbors and the bottom two neighbors. Then, we take the linear interpolation of those 2 values to get the final color value for uv. </p>
+
+<p> The major difference between nearest pixel-sampling and bilinear sampling is that nearest takes the color value at the single nearest pixel, while bilinear sampling takes an average of 4 neighboring 
+	pixels. From the figures below, we can see that with a supersampling rate of 1, bilinear sampling results in smoother edges than nearest. However, at a supersampling rate of 16, bilinear and nearest actually 
+	produce pretty similar images. This is because supersampling already does some smoothing within each pixel so the additional smoothing from bilinear sampling is harder to differentiate. Thus, we can 
+	expect to observe a large difference between these 2 sampling methods when the texture has many small details and edges. Bilinear sampling will be able to average out multiple pixel textures to smooth out 
+	jaggies along those features but nearest will not. </p>
+
+<div align="middle">
+	<table style="width=100%">
+	  <tr>
+		<td>
+		  <img src="images/task5_nn_ss1.png" align="middle" width="600px"/>
+		  <figcaption align="middle">Figure 9: Nearest pixel-sampling with supersampling 1 pt per pixel.</figcaption>
+		</td>
+		<td>
+		  <img src="images/task5_nn_ss16.png" align="middle" width="600px"/>
+		  <figcaption align="middle">Figure 10: Nearest pixel-sampling with supersampling 16 pts per pixel.</figcaption>
+		</td>
+	  </tr>
+	  <br>
+	  <tr>
+		<td>
+		  <img src="images/task5_bs_ss1.png" align="middle" width="600px"/>
+		  <figcaption align="middle">Figure 11: Bilinear sampling with supersampling 1 pt per pixel.</figcaption>
+		</td>
+	  </tr>
+	  <tr>
+		<td>
+		  <img src="images/task5_bs_ss16.png" align="middle" width="600px"/>
+		  <figcaption align="middle">Figure 4: Bilinear sampling with supersampling 16 pts per pixel.</figcaption>
+		</td>
+	  </tr>
+	</table>
+</div>
 
 
 <h3 align="middle">Part 6: "Level sampling" with mipmaps for texture mapping</h3>
