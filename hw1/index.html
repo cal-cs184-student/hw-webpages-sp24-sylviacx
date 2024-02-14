@@ -204,6 +204,56 @@
 
 
 <h3 align="middle">Part 6: "Level sampling" with mipmaps for texture mapping</h3>
+<p> Level sampling is downsampling the image to smaller sizes beforehand to sample pixels from the appropriate level. To be memory efficient next level's dimensions are half of the previous level.
+	This way when we grab texels from higher levels, their higher frequencies are already filtered and look better in small sizes. 
+	We already had the resized images, so all we needed to do is find the correct mip level and choose the correct texel.
+	To determine the correct level we looked at the max distance traveled on the texture space when moving 1 pixel in the screen space. 
+	We can take the log2 of that distance to get the correct level, because of texture always halving in size. In general formula looks like this:
+	 <div style="text-align: center;">
+		<span style="font-size: 20px;"><b>Level = log<sub>2</sub>(max(<span>&#8730;</span><span  style="border-top: 1px solid black">(du/dx)<sup>2</sup> + (dv/dx)<sup>2</sup></span>, <span>&#8730;</span><span  style="border-top: 1px solid black">(du/dy)<sup>2</sup> + (dv/dy)<sup>2</sup></span>))</b></span>
+	</div>
+	If we use nearest level sampling we take the texel from the level closest to the desired size. If we use linear level sampling we interpolate between colors of texels from two closest levels.
+ <p>
+ 
+ <p> Let S be the average time taken to sample the pixel without accessing the texel. Let T be the average time to access the texel. Let N be the number of pixels we are sampling. Let M be the memory that the texture takes.
+	Then to draw the given texture the resourses used will roughly be:
+		<div style="text-align: center;">
+		<span style="font-size: 20px;"><b>Time = N*S*T 			Memory = M</b></span>
+		</div>
+	Increasing the number of samples makes S equal to KS, where K is the number of samples per pixels. Pixel sampling makes T equal to 4T.
+	Level sampling makes M equal to 4/3*M, and if linear level sampling is used it multiplies T by 2.
+	Increasing number of samples increases the sampling rate, level sampling decreases nyquist rate, so they are both great for downsampling.
+	But they won't do much on upscaling because there might not be enough pixels to sample from in the texture.
+	Pixel sampling on the other hand does not change the sampling rate, however it does interpolate between pixels, which makes upscaled image look smoother and less pixelated.
+<p>
+<div align="middle">
+  <table style="width=100%">
+    <tr>
+      <td>
+        <img src="https://cdn.discordapp.com/attachments/1206889552627769354/1207101176022040616/0nearest.png?ex=65de6b93&is=65cbf693&hm=ab4247ece07f5b964d3e0b717246f31d36164689c567f56bbeecd21cebea9d8a&" align="middle" width="400px"/>
+        <figcaption align="middle">L_ZERO and P_NEAREST.</figcaption>
+      </td>
+      <td>
+        <img src="https://cdn.discordapp.com/attachments/1206889552627769354/1207101177016094730/0bilinear.png?ex=65de6b93&is=65cbf693&hm=21b5416691c89674d718163509208ee783d6963919e8bcba8b3ccab0d73c7bec&" align="middle" width="400px"/>
+        <figcaption align="middle">L_ZERO and P_LINEAR.</figcaption>
+      </td>
+    </tr>
+    <br>
+    <tr>
+      <td>
+        <img src="https://cdn.discordapp.com/attachments/1206889552627769354/1207101176659841124/0nearestnearest.png?ex=65de6b93&is=65cbf693&hm=4e8b88e4f7d640e2cdb7718053931b894d724b7e7e68aee615f6dde0bd576558&" align="middle" width="400px"/>
+        <figcaption align="middle">L_NEAREST and P_NEAREST.</figcaption>
+      </td>
+      <td>
+        <img src="https://cdn.discordapp.com/attachments/1206889552627769354/1207101176357716048/0nearestbili.png?ex=65de6b93&is=65cbf693&hm=136b391a03bf5f40f8c34a8060d304e7b29ffdf0ad041c5645044e2cc9630b94&" align="middle" width="400px"/>
+        <figcaption align="middle">L_NEAREST and P_LINEAR.</figcaption>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<p>Note that P_LINEAR on L_ZERO made very little difference, this is because we are sampling below nyquist rate and interpolating between colors of pixels does not remove aliasing effects.
+ It works better when you need to smooth the upscaled image. In the last image we are upscaling the mip of a small size, which is why pixel sampling makes such a difference.<p>
 
 </body>
 </html>
