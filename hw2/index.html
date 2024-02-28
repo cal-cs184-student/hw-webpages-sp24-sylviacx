@@ -224,7 +224,7 @@
 <p>
     To flip an edge, we would ahve to iterate through the two triangles incident to the edge and overwrite the edge's vertices with the two vertices not connected to that edge. In order
 	to fix the rest of the triangle structure, we would need to also update every face, edge, halfedge, and vertex. First, we created variables to save every single original halfedge, vertex, edge, and face.
-	We also checked that we were not flipping a boundary edge. Then, we used <code>setNeighbor</code> to update relevant information for all the halfedges. Then we manually updated the halfedges for the rest of 
+	We also checked that we were not flipping a boundary edge. Then, we used <code>setNeighbors</code> to update relevant information for all the halfedges. Then we manually updated the halfedges for the rest of 
 	the vertices, faces, and edges.
 </p>
 <br>
@@ -266,9 +266,12 @@
   Briefly explain how you implemented the edge split operation and describe any interesting implementation / debugging tricks you have used.
 </b>
 <p>
-    Similar to edge flip we grab all of the elements of incident triangles.
-	We then create 6 new half edges, 3 new edges(we modify original to become one of the 4 middle ones), 2 new faces, and a new vertex.
-	We set the correct neighbours for all the half edges, and correct half edges for the rest of the elements.
+    Similar to edge flip we grab all of the elements of incident triangles and store them in variables.
+	We then create 6 new half edges, 2 pairs for the 2 new edges created from the horizontal split and 1 pair for the new edge created from the vertical split. 
+	We also create 3 new edges for the center cross, keeping the original vertical edge e0 as one of the 4 edges involved in the cross.
+	We also create 2 new faces, and a new vertex m.
+	Similar to how we implemented edge flip, we used <code>setNeighbors</code> to update relevant information for all the halfedges, then manually 
+	updated the halfedges for the rest of the vertices, faces, and edges.
 </p>
 <br>
 
@@ -302,14 +305,14 @@
   <table style="width:100%">
     <tr align="center">
 	  <img src="https://cdn.discordapp.com/attachments/1206890319845523516/1211936506319740969/image.png?ex=65f002d3&is=65dd8dd3&hm=cd486e30c19306d984d2b64a35309d45069edec64dd947fdfe3d3244ede51941&" align="middle" width="400px"/>
-      <figcaption>Before edge split</figcaption>
+      <figcaption>Before edge split and flip</figcaption>
       <td>
 		<img src="https://cdn.discordapp.com/attachments/1206890319845523516/1211937134886527017/image.png?ex=65f00369&is=65dd8e69&hm=94f4aa09e8a7741678b0efb1ddf9305379f9b2db8f6a4442c3901b44a4e58646&" align="middle" width="400px"/>
         <figcaption>After edge flip</figcaption>
       </td>
       <td>
 		<img src="https://cdn.discordapp.com/attachments/1206890319845523516/1211937256592646154/image.png?ex=65f00386&is=65dd8e86&hm=c9657bcf7dbc5d7ec78aa9ea96da543640c53f0ff982d92ddc60be905c50a8ee&" align="middle" width="400px"/>
-		<figcaption>After split of flipped edge</figcaption>
+		<figcaption>After splitting flipped edge</figcaption>
       </td>
     </tr>
   </table>
@@ -323,18 +326,26 @@
   Briefly explain how you implemented the loop subdivision and describe any interesting implementation / debugging tricks you have used.
 </b>
 <p>
-    For each vertex we compute it's new position according to
-	<code> (1 - degree * u) * original_position + u * original_neighbor_position_sum </code> 
-	where <code> u = 3/16*(degree == 3) + 3/(8*degree) * (degree != 3)</code>.
+    For each vertex, we compute it's new position according to:
+	<div style="text-align: center;">
+		<span style="font-size: 20px;"><b>(1 - degree * u) * original_position + u * original_neighbor_position_sum</b></span>
+		<span style="font-size: 20px;"><b>u = 3/16*(degree == 3) + 3/(8*degree) * (degree != 3)</b></span>
+	</div>
+	We also indicate that all these vertices are from the original mesh by setting <code>v->isNew = false</code>.
 	<br>
-	Next for each edge we compute the position where the new vertex will be located according to <code> 3/8 * (A + B) + 1/8 * (C + D) </code> where
-	A, B, C, D are positions of the vertices of the triangles incident to the edge and A and B are incident to the edge and C and D are not.
+	Next, for each edge we compute its new vertex position according to:
+	<div style="text-align: center;">
+		<span style="font-size: 20px;"><b>3/8 * (A + B) + 1/8 * (C + D)</b></span>
+	</div>
+	A, B, C, D are positions of the vertices of the triangles incident to the edge. A and B are incident to the edge while C and D are not.
+	We also indicate that all these edges are from the original mesh by setting <code>e->isNew = false</code>.
 	<br>
-	We copy the pointers to the old edges and then we split them, this way we do not split new edges, and we do not mark two edges, which make up the old edge, as new. 
+	Next, we copy the pointers to the old edges and then we split them. This way we can iterate over a copy of the original mesh and avoid
+	infinitely splitting new edges. Furthermore, when a split occurs, we do not mark the two edges which make up the old edge as new. 
 	<br>
-	After that, we flip all the edges connected to a new and an old vertex.
+	After that, we iterate through the mesh edges again and flip all the edges connected to a new and an old vertex.
 	<br>
-	Finally, we set the position of each vertex to the new position it should be at.
+	Finally, we set the position of each vertex to the new position it should be at and set every vertex and edge's isNew attribute as false.
 </p>
 <br>
 
@@ -343,7 +354,7 @@
   Take some notes, as well as some screenshots, of your observations on how meshes behave after loop subdivision. What happens to sharp corners and edges? Can you reduce this effect by pre-splitting some edges?
 </b>
 <p>
-	Loop subdivision makes the mesh more rounded, more smooth.
+	Loop subdivision splits single triangles in the mesh into multiple triangles, making the mesh more rounded and smooth. With enough subdivisions, the object surface becomes completeley smooth to the human eye.
 	<table style="width:100%">
 		<tr align="center">
 		  <td>
@@ -356,8 +367,9 @@
 		  </td>
 		</tr>
 	</table>
-	Sharp edges become smoothed out, but we could aleviate the effect by pre splitting the edge and flipping two created edges. 
-	Notice the corner edge in the pictures below. With the pre-split edge it is still sharp.
+	Subdivision causes sharp edges to smooth out, but if the object is intended to have sharp edges, this smoothness
+	can be a problem. We could aleviate the smoothing effect by pre splitting the intended sharp edge and flipping two created edges. 
+	Notice the corner edge in the pictures below. With normal subdivision, the edge smooths out, but by pre-splitting the edge then subdividing, it stays sharp.
 	
 <p><div align="middle">
 	  <table style="width:100%">
@@ -396,7 +408,7 @@
       </td>
       <td>
 		<img src="https://cdn.discordapp.com/attachments/1206889552627769354/1212194410268336188/image.png?ex=65f0f304&is=65de7e04&hm=fc06d58ac671fe2b4a839cb80e5a08d8c0fb2bd2544e06b1c7907a7827af4271&" align="middle" width="250px"/>
-		<figcaption>Corner 2(opposite to corner 1) </figcaption>
+		<figcaption>Corner 2, opposite to corner 1 </figcaption>
       </td>
     </tr>
   </table>
@@ -404,11 +416,12 @@
   Uneven subdivision occurs because corner vertices are not connected to other vertices symmetrically.
   Notice how corner 1 has 3 incident triangles and corner 2 has 4 incident triangles.
   <br>
-  There are two ways to solve this issue, first one is to flip the selected edge of corner 2.
-  Now two corners both have 3 incident triangles which are connected symmetrically.
-  We have a symmetrical subdivision, but it is not symmetrical on all the axises. 
-  Two corners have 3 incident triangles, other two have 5.
-  To make fullly symmetrical subdivision we split all the diagonal edges. This way all corners will have 6 incident triangles, which are connected symmetrically.
+  There are two ways to solve this issue. First way is to flip the selected edge of corner 2, reducing the number of incident triangles from 4 to 3.
+  Now both corners have 3 incident triangles which are connected symmetrically.
+  At this point we have a symmetrical subdivision between the 2 corners, but not on all the axises. 
+  Two corners have 3 incident triangles, but the other two have 5.
+  To make fullly symmetrical subdivision we can employ the second technique: splitting all the diagonal edges. 
+  This way all corners will have 6 incident triangles, allowing for completely symmetric subdivision.
     <p><div align="middle">
 	<table style="width:100%">
     <tr align="center">
@@ -431,9 +444,6 @@
 <b>
     Save your best polygon mesh as partsevenmodel.dae in your docs folder and show us a screenshot of the mesh in your write-up.
 </b>
-<p>
-    YOUR RESPONSE GOES HERE
-</p>
 <br>
 
 
@@ -466,13 +476,18 @@
 <b>
     Describe what you have done to enhance your mesh beyond the simple humanoid mesh described in the tutorial.
 </b>
-<p>
-    frog
-</p>
+<div align="middle">
+	<table style="width=100%">
+	  <tr>
+		<td>
+		  <img src="https://media.discordapp.net/attachments/1206889552627769354/1212265728494014484/toadhypno.png?ex=65f13570&is=65dec070&hm=ea20e0224ae2d216c70042d1086528bd6984b07e0ed8198b9cbaf359819a7ec1&=&format=webp&quality=lossless&width=687&height=387" align="middle" width="800px"/>
+		  <figcaption align="middle">froge</figcaption>
+		</td>
+	  </tr>
+	</table>
+  </div>
 <br>
 
 
 </body>
 </html>
-index.html
-18 KB
