@@ -1,7 +1,443 @@
-<html>
-	<head>
-	</head>
-	<body>
-		Homework 2 index.html here
-	</body>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<style>
+  body {
+    background-color: white;
+    padding: 100px;
+    width: 1000px;
+    margin: auto;
+    text-align: left;
+    font-weight: 300;
+    font-family: 'Open Sans', sans-serif;
+    color: #121212;
+  }
+  h1, h2, h3, h4 {
+    font-family: 'Source Sans Pro', sans-serif;
+  }
+  kbd {
+    color: #121212;
+  }
+</style>
+<title>CS 184 Mesh Edit</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
+
+<script>
+  MathJax = {
+    tex: {
+      inlineMath: [['$', '$'], ['\\(', '\\)']]
+    }
+  };
+</script>
+<script id="MathJax-script" async
+  src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js">
+</script>
+
+</head>
+
+
+<body>
+
+<h1 align="middle">CS 184: Computer Graphics and Imaging, Spring 2018</h1>
+<h1 align="middle">Project 2: Mesh Edit</h1>
+<h2 align="middle">YOUR NAME</h2>
+
+<br><br>
+
+<div>
+
+<h2 align="middle">Overview</h2>
+<p>
+    YOUR RESPONSE GOES HERE
+</p>
+<br>
+
+
+<h2 align="middle">Section I: Bezier Curves and Surfaces</h2>
+
+<h3 align="middle">Part 1: Bezier Curves with 1D de Casteljau Subdivision</h3>
+
+
+<b>
+  Briefly explain de Casteljau's algorithm and how you implemented it in order to evaluate Bezier curves.
+</b>
+<p>
+    YOUR RESPONSE GOES HERE
+</p>
+<br>
+
+
+<b>
+  Take a look at the provided .bzc files and create your own Bezier curve with 6 control points of your choosing. Use this Bezier curve for your screenshots below.
+</b>
+<p>
+    YOUR RESPONSE GOES HERE
+</p>
+<!-- Example of including a single figure -->
+<div align="middle">
+  <img src="images/your_file.png" align="middle" width="50%">
+</div>
+<br>
+
+<b>
+  Show screenshots of each step / level of the evaluation from the original control points down to the final evaluated point. Press <kbd>E</kbd> to step through. Toggle <kbd>C</kbd> to show the completed Bezier curve as well.
+</b>
+<!-- Example of including multiple figures -->
+<div align="middle">
+  <table style="width:100%">
+    <tr align="center">
+      <td>
+        <img src="images/your_file.png" align="middle" width="400px"/>
+        <figcaption>Level 0</figcaption>
+      </td>
+      <td>
+        <img src="images/your_file.png" align="middle" width="400px"/>
+        <figcaption>Level 1</figcaption>
+      </td>
+    </tr>
+    <br>
+    <tr align="center">
+      <td>
+        <img src="images/your_file.png" align="middle" width="400px"/>
+        <figcaption>Level 2</figcaption>
+      </td>
+      <td>
+        <img src="images/your_file.png" align="middle" width="400px"/>
+        <figcaption>Level 3</figcaption>
+      </td>
+    </tr>
+    <br>
+    <tr align="center">
+      <td>
+        <img src="images/your_file.png" align="middle" width="400px"/>
+        <figcaption>Level 4</figcaption>
+      </td>
+    </tr>
+  </table>
+</div>
+<br>
+
+
+<b>
+  Show a screenshot of a slightly different Bezier curve by moving the original control points around and modifying the parameter \(t\) via mouse scrolling.
+</b>
+<p>
+    YOUR RESPONSE GOES HERE
+</p>  
+<br>
+
+
+<h3 align="middle">Part 2: Bezier Surfaces with Separable 1D de Casteljau</h3>
+<b>
+  Briefly explain how de Casteljau algorithm extends to Bezier surfaces and how you implemented it in order to evaluate Bezier surfaces.
+</b>
+<p>
+    YOUR RESPONSE GOES HERE
+</p>
+<br>
+
+
+<b>
+  Show a screenshot of bez/teapot.bez (not .dae) evaluated by your implementation.
+</b>
+<p>
+    YOUR RESPONSE GOES HERE
+</p>
+<br>
+
+
+<h2 align="middle">Section II: Triangle Meshes and Half-Edge Data Structure</h2>
+
+<h3 align="middle">Part 3: Area-Weighted Vertex Normals</h3>
+
+<b>
+  Briefly explain how you implemented the area-weighted vertex normals.
+</b>
+<p>
+    For vertex we iterate through the triangles incident to it. We then use Heron's formula to calculate area of each triangle.
+	We sum triangle normals multiplied by corresponding areas and then normalize the result.
+</p>
+<br>
+
+
+<b>
+  Show screenshots of dae/teapot.dae (not .bez) comparing teapot shading with and without vertex normals. Use <kbd>Q</kbd> to toggle default flat shading and Phong shading.
+</b>
+<p>
+<div align="middle">
+  <table style="width:100%">
+    <tr align="center">
+      <td>
+        <img src="https://cdn.discordapp.com/attachments/1206892064411750410/1211931035743420437/image.png?ex=65effdbb&is=65dd88bb&hm=53a0fb8388b24a9858419d1bd3e5d122433e079803e0a93c655a0d67132b1978&" align="middle" width="400px"/>
+        <figcaption>Without vertex normals</figcaption>
+      </td>
+      <td>
+        <img src="https://cdn.discordapp.com/attachments/1206892064411750410/1211931216333508649/image.png?ex=65effde6&is=65dd88e6&hm=d7b6d15af5e9ac57d928521c2163e979a68a6a8f03b327f81ada87892da10377&" align="middle" width="400px"/>
+        <figcaption>Without vertex</figcaption>
+      </td>
+    </tr>
+  </table>
+</div>
+</p>
+<br>
+
+
+<h3 align="middle">Part 4: Edge Flip</h3>
+<b>
+  Briefly explain how you implemented the edge flip operation and describe any interesting implementation / debugging tricks you have used.
+</b>
+<p>
+    To implement edge flip we iterated through two triangles incident to the edge, grabbed the two vertices not connected to that edge
+	and made the edge connect them. To do this we had to correctly update data for every face, edge, halfedge and vertex.
+	Using <kbd>setNeighbor<kbd> we updated relevant information for all the halfedges, we then updated halfedges of the other elements to the correct ones.
+</p>
+<br>
+
+
+<b>
+  Show screenshots of the teapot before and after some edge flips.
+</b>
+<p>
+<div align="middle">
+  <table style="width:100%">
+    <tr align="center">
+      <td>
+        <img src="https://cdn.discordapp.com/attachments/1206889873798332446/1211934428537032754/image.png?ex=65f000e4&is=65dd8be4&hm=a58c5ca94695126b3bca8de3c7424164779417192b2826d72ad1b12fbbb3e2c9&" align="middle" width="400px"/>
+        <figcaption>Before edge flip</figcaption>
+      </td>
+      <td>
+        <img src="https://cdn.discordapp.com/attachments/1206889873798332446/1211934514058629160/image.png?ex=65f000f8&is=65dd8bf8&hm=6c4960e0011f06b4fb7e94493006d52b42d7af2dc29d482ab66f6b7eef58e50f&" align="middle" width="400px"/>
+        <figcaption>After edge flip</figcaption>
+      </td>
+    </tr>
+  </table>
+</div>
+</p>
+<br>
+
+
+<b>
+    Write about your eventful debugging journey, if you have experienced one.
+</b>
+<p>
+    Everything worked first time 😎
+</p>
+<br>
+
+
+<h3 align="middle">Part 5: Edge Split</h3>
+<b>
+  Briefly explain how you implemented the edge split operation and describe any interesting implementation / debugging tricks you have used.
+</b>
+<p>
+    Similar to edge flip we grab all of the elements of incident triangles.
+	We then create 6 new half edges, 3 new edges(we modify original to become one of the 4 middle ones), 2 new faces, and a new vertex.
+	We set the correct neighbours for all the half edges, and correct half edges for the rest of the elements.
+</p>
+<br>
+
+
+<b>
+    Show screenshots of a mesh before and after some edge splits. 
+</b>
+<p>
+<div align="middle">
+  <table style="width:100%">
+    <tr align="center">
+      <td>
+        <img src="https://cdn.discordapp.com/attachments/1206889873798332446/1211934428537032754/image.png?ex=65f000e4&is=65dd8be4&hm=a58c5ca94695126b3bca8de3c7424164779417192b2826d72ad1b12fbbb3e2c9&" align="middle" width="400px"/>
+        <figcaption>Before edge split</figcaption>
+      </td>
+      <td>
+        <img src="https://cdn.discordapp.com/attachments/1206890319845523516/1211936203381669948/image.png?ex=65f0028b&is=65dd8d8b&hm=40f20020f7c28aa9afc1d46cb40de4a82d9ae3ef005b752901da99f441830e20&" align="middle" width="400px"/>
+        <figcaption>After edge split</figcaption>
+      </td>
+    </tr>
+  </table>
+</div>
+</p>
+<br>
+
+
+<b>
+    Show screenshots of a mesh before and after a combination of both edge splits and edge flips.
+</b>
+<p><div align="middle">
+  <table style="width:100%">
+    <tr align="center">
+	  <img src="https://cdn.discordapp.com/attachments/1206890319845523516/1211936506319740969/image.png?ex=65f002d3&is=65dd8dd3&hm=cd486e30c19306d984d2b64a35309d45069edec64dd947fdfe3d3244ede51941&" align="middle" width="400px"/>
+      <figcaption>Before edge split</figcaption>
+      <td>
+		<img src="https://cdn.discordapp.com/attachments/1206890319845523516/1211937134886527017/image.png?ex=65f00369&is=65dd8e69&hm=94f4aa09e8a7741678b0efb1ddf9305379f9b2db8f6a4442c3901b44a4e58646&" align="middle" width="400px"/>
+        <figcaption>After edge flip</figcaption>
+      </td>
+      <td>
+		<img src="https://cdn.discordapp.com/attachments/1206890319845523516/1211937256592646154/image.png?ex=65f00386&is=65dd8e86&hm=c9657bcf7dbc5d7ec78aa9ea96da543640c53f0ff982d92ddc60be905c50a8ee&" align="middle" width="400px"/>
+		<figcaption>After split of flipped edge</figcaption>
+      </td>
+    </tr>
+  </table>
+</div>
+</p>
+<br>
+
+
+<h3 align="middle">Part 6: Loop Subdivision for Mesh Upsampling</h3>
+<b>
+  Briefly explain how you implemented the loop subdivision and describe any interesting implementation / debugging tricks you have used.
+</b>
+<p>
+    For each vertex we compute it's new position according to
+	<code> (1 - degree * u) * original_position + u * original_neighbor_position_sum </code> 
+	where <code> u = 3/16*(degree == 3) + 3/(8*degree) * (degree != 3)</code>.
+	<br>
+	Next for each edge we compute the position where the new vertex will be located according to <code> 3/8 * (A + B) + 1/8 * (C + D) </code> where
+	A, B, C, D are positions of the vertices of the triangles incident to the edge and A and B are incident to the edge and C and D are not.
+	<br>
+	We copy the pointers to the old edges and then we split them, this way we do not split new edges, and we do not mark two edges, which make up the old edge, as new. 
+	<br>
+	After that, we flip all the edges connected to a new and an old vertex.
+	<br>
+	Finally, we set the position of each vertex to the new position it should be at.
+</p>
+<br>
+
+
+<b>
+  Take some notes, as well as some screenshots, of your observations on how meshes behave after loop subdivision. What happens to sharp corners and edges? Can you reduce this effect by pre-splitting some edges?
+</b>
+<p>
+	Loop subdivision makes the mesh more rounded, more smooth.
+	<table style="width:100%">
+		<tr align="center">
+		  <td>
+			<img src="https://cdn.discordapp.com/attachments/1206889552627769354/1212187857154875483/image.png?ex=65f0ecea&is=65de77ea&hm=0ca04517d7bb89957c69ebc00e79683bb3484e4b6bfe95ff640f015d014f1f60&" align="middle" width="400px"/>
+			<figcaption>Before subdivision </figcaption>
+		  </td>
+		  <td>
+			<img src="https://cdn.discordapp.com/attachments/1206889552627769354/1212187921918988368/image.png?ex=65f0ecf9&is=65de77f9&hm=319f90ae3fc00c9ebb8aa6a9ec82ff6d919f03c7dae860df5abf7c6e6d875102&" align="middle" width="400px"/>
+			<figcaption>After subdivision</figcaption>
+		  </td>
+		</tr>
+	</table>
+	Sharp edges become smoothed out, but we could aleviate the effect by pre splitting the edge and flipping two created edges. 
+	Notice the corner edge in the pictures below. With the pre-split edge it is still sharp.
+	
+<p><div align="middle">
+	  <table style="width:100%">
+    <tr align="center">
+	  <img src="https://cdn.discordapp.com/attachments/1206889552627769354/1212186694686871572/image.png?ex=65f0ebd5&is=65de76d5&hm=8cc04ed647dba4258753f707d5d5aebb184029d5beac034aa15aadd984202e50&" align="middle" width="400px"/>
+      <figcaption>Before subdivision</figcaption>
+      <td>
+		<img src="https://cdn.discordapp.com/attachments/1206889552627769354/1212186815885221928/image.png?ex=65f0ebf2&is=65de76f2&hm=f8d76c1d343b49096a526642ff554aff1860e8a272187a7ff9ff7cb593b22bed&" align="middle" width="400px"/>
+        <figcaption>After subdivision</figcaption>
+      </td>
+      <td>
+		<img src="https://cdn.discordapp.com/attachments/1206889552627769354/1212190930980053052/image.png?ex=65f0efc7&is=65de7ac7&hm=3305b6a4ae1b7aedac059e65e65cbbe505b293e4ee1014b5c1553960495ed4c0&" align="middle" width="400px"/>
+		<figcaption>After subdivision with pre splitting and flipping </figcaption>
+      </td>
+    </tr>
+  </table>
+</p>
+</p>
+<br>
+
+
+<b>
+  Load dae/cube.dae. Perform several iterations of loop subdivision on the cube. Notice that the cube becomes slightly asymmetric after repeated subdivisions. Can you pre-process the cube with edge flips and splits so that the cube subdivides symmetrically? Document these effects and explain why they occur. Also explain how your pre-processing helps alleviate the effects.
+</b>
+<p>
+    <p><div align="middle">
+	  <table style="width:100%">
+    <tr align="center">
+		<td>
+		<img src="https://cdn.discordapp.com/attachments/1206889552627769354/1212193928292343868/image.png?ex=65f0f291&is=65de7d91&hm=fa72aa0c97a9df95192c51cf381681ada4d972aa0e5ed0b0686127f9a6c86aac&" align="middle" width="250px"/>
+		<figcaption>Uneven subdivision</figcaption>
+	  </td>
+      <td>
+		<img src="https://cdn.discordapp.com/attachments/1206889552627769354/1212194287085817928/image.png?ex=65f0f2e7&is=65de7de7&hm=89e3e2525d6949dfd6044dbacc659c97eadec3a17b1397c683be20384dd12aee&" align="middle" width="250px"/>
+        <figcaption>Corner 1</figcaption>
+      </td>
+      <td>
+		<img src="https://cdn.discordapp.com/attachments/1206889552627769354/1212194410268336188/image.png?ex=65f0f304&is=65de7e04&hm=fc06d58ac671fe2b4a839cb80e5a08d8c0fb2bd2544e06b1c7907a7827af4271&" align="middle" width="250px"/>
+		<figcaption>Corner 2(opposite to corner 1) </figcaption>
+      </td>
+    </tr>
+  </table>
+  </p>
+  Uneven subdivision occurs because corner vertices are not connected to other vertices symmetrically.
+  Notice how corner 1 has 3 incident triangles and corner 2 has 4 incident triangles.
+  <br>
+  There are two ways to solve this issue, first one is to flip the selected edge of corner 2.
+  Now two corners both have 3 incident triangles which are connected symmetrically.
+  We have a symmetrical subdivision, but it is not symmetrical on all the axises. 
+  Two corners have 3 incident triangles, other two have 5.
+  To make fullly symmetrical subdivision we split all the diagonal edges. This way all corners will have 6 incident triangles, which are connected symmetrically.
+    <p><div align="middle">
+	<table style="width:100%">
+    <tr align="center">
+      <td>
+		<img src="https://cdn.discordapp.com/attachments/1206889552627769354/1212194657493061662/image.png?ex=65f0f33f&is=65de7e3f&hm=135be8457189f3bf74361e3b1fb53de7dae393b50779513d60e0034273aabec2&" align="middle" width="400px"/>
+        <figcaption>Flipping the edge on corner 2</figcaption>
+      </td>
+      <td>
+		<img src="https://cdn.discordapp.com/attachments/1206889552627769354/1212198812135718952/image.png?ex=65f0f71e&is=65de821e&hm=f3c83f54d5e852c6139de90d44e8d77e565458262fa37f61ee3456d76ad3d617&" align="middle" width="400px"/>
+		<figcaption>Subdividing all diagonals </figcaption>
+      </td>
+    </tr>
+  </table>
+  </p>
+</p>
+<br>
+
+
+<h3 align="middle">Part 7 (Optional, Possible Extra Credit)</h3>
+<b>
+    Save your best polygon mesh as partsevenmodel.dae in your docs folder and show us a screenshot of the mesh in your write-up.
+</b>
+<p>
+    YOUR RESPONSE GOES HERE
+</p>
+<br>
+
+
+<b>
+    Include a series of screenshots showing your original mesh and your mesh after one and two rounds of subdivision. If you have used custom shaders, include screenshots of your mesh with those shaders applied as well.
+</b>
+<p>
+        <p><div align="middle">
+	  <table style="width:100%">
+    <tr align="center">
+		<td>
+		<img src="https://cdn.discordapp.com/attachments/1206889552627769354/1212199711684042772/image.png?ex=65f0f7f4&is=65de82f4&hm=bf420f40b75191bba2dede719ebdc0cf4fb426cceab824372276c22a23596d18&" align="middle" width="350px"/>
+		<figcaption>Original</figcaption>
+	  </td>
+      <td>
+		<img src="https://cdn.discordapp.com/attachments/1206889552627769354/1212200372882509864/image.png?ex=65f0f892&is=65de8392&hm=4702bcb28df20b3b1d6f0e8f633e4293a53c44cb5140ce8770404d6525cbed50&" align="middle" width="350px"/>
+        <figcaption>1 subdivision </figcaption>
+      </td>
+      <td>
+		<img src="https://cdn.discordapp.com/attachments/1206889552627769354/1212200421758734436/image.png?ex=65f0f89e&is=65de839e&hm=adfdc4c6b6d886718936925cfda801b85b1ee19106e1bb946aa16e6221c89853&" align="middle" width="350px"/>
+		<figcaption>2 subdivisions</figcaption>
+      </td>
+    </tr>
+  </table>
+  </p>
+</p>
+<br>
+
+
+<b>
+    Describe what you have done to enhance your mesh beyond the simple humanoid mesh described in the tutorial.
+</b>
+<p>
+    frog
+</p>
+<br>
+
+
+</body>
 </html>
+index.html
+18 KB
