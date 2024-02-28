@@ -73,8 +73,6 @@
     De Casteljau's algorithm is a recursive function that takes in n points and outputs a (n - 1)-degree polynomial Bezier curve for those n points. 
 	Our recursive step function takes in n points and iterates through them, interpolating between point i and i + 1 and returning a list of n - 1 
 	interpolated points. The algorithm calls this recursive step function until we have reduced n points down to 1, which is the final interpolated vector.
-	To evaluate Bezier patches along axis (u, v), we first evaluate the n Bezier curves along the u axis. We then use these n final interpolated vectors as the n input 
-	points to evaluate the moving Bezier curve in the v axis.
 </p>
 <br>
 
@@ -160,7 +158,9 @@
   Briefly explain how de Casteljau algorithm extends to Bezier surfaces and how you implemented it in order to evaluate Bezier surfaces.
 </b>
 <p>
-    YOUR RESPONSE GOES HERE
+    With Bezier surfaces, the algorithm input is an n x n matrix of 3D control points. To evaluate the patch, we first solve for the n Bezier curves at interpolation parameter u. 
+	This produces n 3D control points, which we can use as inputs to evaluate the Bezier curve along interpolation parameter v. This produces a singular 3D point that lies on the Bezier 
+	patch! 
 </p>
 <br>
 
@@ -168,9 +168,16 @@
 <b>
   Show a screenshot of bez/teapot.bez (not .dae) evaluated by your implementation.
 </b>
-<p>
-    YOUR RESPONSE GOES HERE
-</p>
+<div align="middle">
+	<table style="width=100%">
+	  <tr>
+		<td>
+		  <img src="https://media.discordapp.net/attachments/1206892044363239485/1212253816389501068/image.png?ex=65f12a58&is=65deb558&hm=dbbb80891dd48571541f88a319b267efcfa34868c19714ef340f84fd17de6640&=&format=webp&quality=lossless&width=1048&height=662" align="middle" width="800px"/>
+		  <figcaption align="middle">Figure 10: Teapot evaluated with Bezier patches.</figcaption>
+		</td>
+	  </tr>
+	</table>
+  </div> 
 <br>
 
 
