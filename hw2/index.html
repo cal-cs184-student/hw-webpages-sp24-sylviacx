@@ -357,12 +357,24 @@
 	<table style="width:100%">
 		<tr align="center">
 		  <td>
-			<img src="https://cdn.discordapp.com/attachments/1206889552627769354/1212187857154875483/image.png?ex=65f0ecea&is=65de77ea&hm=0ca04517d7bb89957c69ebc00e79683bb3484e4b6bfe95ff640f015d014f1f60&" align="middle" width="400px"/>
+			<img src="https://media.discordapp.net/attachments/1206889552627769354/1212268881243013150/image.png?ex=65f13860&is=65dec360&hm=1a92fe9a12f51284d6fb5d786f88dca47d8bdde8fe0de92e9996de007d559409&=&format=webp&quality=lossless&width=1055&height=662" align="middle" width="400px"/>
 			<figcaption>Before subdivision </figcaption>
 		  </td>
 		  <td>
-			<img src="https://cdn.discordapp.com/attachments/1206889552627769354/1212187921918988368/image.png?ex=65f0ecf9&is=65de77f9&hm=319f90ae3fc00c9ebb8aa6a9ec82ff6d919f03c7dae860df5abf7c6e6d875102&" align="middle" width="400px"/>
-			<figcaption>After subdivision</figcaption>
+			<img src="https://media.discordapp.net/attachments/1206889552627769354/1212268932942274570/image.png?ex=65f1386c&is=65dec36c&hm=ddb5c570b3dda337f71748c6a0eeb29d250243ccf74687ba3f6d668acc194be7&=&format=webp&quality=lossless&width=1043&height=662" align="middle" width="400px"/>
+			<figcaption>One subdivision</figcaption>
+		  </td>
+		</tr>
+	</table>
+	<table style="width:100%">
+		<tr align="center">
+		  <td>
+			<img src="https://media.discordapp.net/attachments/1206889552627769354/1212268984888721418/image.png?ex=65f13878&is=65dec378&hm=c004d1cd2d55fc468f49846c718847afc0b2bc7affce680de88102438904578a&=&format=webp&quality=lossless&width=1033&height=662" align="middle" width="400px"/>
+			<figcaption>Two subdivisions</figcaption>
+		  </td>
+		  <td>
+			<img src="https://media.discordapp.net/attachments/1206889552627769354/1212269065822019655/image.png?ex=65f1388c&is=65dec38c&hm=c5bd10a3ec2c8eb18b90b80be7146f1c32d2df8a0a5980de53ec9dcb36ca379d&=&format=webp&quality=lossless&width=1047&height=662" align="middle" width="400px"/>
+			<figcaption>Three subdivisions</figcaption>
 		  </td>
 		</tr>
 	</table>
@@ -408,16 +420,13 @@
       </td>
     </tr>
   </table>
+</div>
 <p>
-  Uneven subdivision occurs because corner vertices are not connected to other vertices symmetrically.
-  Notice how corner 1 has 3 incident triangles and corner 2 has 4 incident triangles.
+  Uneven subdivision occurs because corner vertices are not connected to other vertices symmetrically. Notice how corner 1 has 3 incident triangles and corner 2 has 4 incident triangles.
   <br>
-  There are two ways to solve this issue. First way is to flip the selected edge of corner 2, reducing the number of incident triangles from 4 to 3.
-  Now both corners have 3 incident triangles which are connected symmetrically.
-  At this point we have a symmetrical subdivision between the 2 corners, but not on all the axises. 
-  Two corners have 3 incident triangles, but the other two have 5.
-  To make fullly symmetrical subdivision we can employ the second technique: splitting all the diagonal edges. 
-  This way all corners will have 6 incident triangles, allowing for completely symmetric subdivision.
+  There are two ways to solve this issue. First way is to flip the selected edge of corner 2, reducing the number of incident triangles from 4 to 3. Now both corners have 3 incident triangles 
+  which are connected symmetrically. At this point we have a symmetrical subdivision between the 2 corners, but not on all the axises. Two corners have 3 incident triangles, but the other two 
+  have 5. To make fullly symmetrical subdivision we can employ the second technique: splitting all the diagonal edges. This way all corners will have 6 incident triangles, allowing for completely symmetric subdivision.
 </p>
 <div align="middle">
 	<table style="width:100%">
@@ -432,6 +441,7 @@
       </td>
     </tr>
   </table>
+</div>
 <br>
 
 
@@ -462,6 +472,7 @@
       </td>
     </tr>
   </table>
+</div>
 <br>
 
 
@@ -477,8 +488,7 @@
 		</td>
 	  </tr>
 	</table>
-  </div>
-<br>
+</div>
 
 
 </body>
