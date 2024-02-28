@@ -41,7 +41,11 @@
 
 <h1 align="middle">CS 184: Computer Graphics and Imaging, Spring 2018</h1>
 <h1 align="middle">Project 2: Mesh Edit</h1>
-<h2 align="middle">YOUR NAME</h2>
+<h2 align="middle">Sylvia Chen and Artem Shumay</h2>
+<div align="middle"> 
+	<p><a href="https://cal-cs184-student.github.io/hw-webpages-sp24-sylviacx/hw2/index.html">https://cal-cs184-student.github.io/hw-webpages-sp24-sylviacx/hw2/index.html</a>
+	</p>
+</div>
 
 <br><br>
 
@@ -49,7 +53,10 @@
 
 <h2 align="middle">Overview</h2>
 <p>
-    YOUR RESPONSE GOES HERE
+    We implemented 2 different smoothing techniques. The first one was calculating 2D and 3D Bezier curves with de Casteljau's 
+	algorithm. The second technique was representing triangle meshes with a half-edge data structure, allowing us to easily implement several 
+	mesh manipulation functions. Through these exercises, we gained familiarty with de Casteljau's algorithm and traversing/manipulating 
+	half-edge triangles. This homework was especially interesting because it is our first assignment working with 3D objects!
 </p>
 <br>
 
@@ -63,7 +70,11 @@
   Briefly explain de Casteljau's algorithm and how you implemented it in order to evaluate Bezier curves.
 </b>
 <p>
-    YOUR RESPONSE GOES HERE
+    De Casteljau's algorithm is a recursive function that takes in n points and outputs a (n - 1)-degree polynomial Bezier curve for those n points. 
+	Our recursive step function takes in n points and iterates through them, interpolating between point i and i + 1 and returning a list of n - 1 
+	interpolated points. The algorithm calls this recursive step function until we have reduced n points down to 1, which is the final interpolated vector.
+	To evaluate Bezier patches along axis (u, v), we first evaluate the n Bezier curves along the u axis. We then use these n final interpolated vectors as the n input 
+	points to evaluate the moving Bezier curve in the v axis.
 </p>
 <br>
 
@@ -71,60 +82,76 @@
 <b>
   Take a look at the provided .bzc files and create your own Bezier curve with 6 control points of your choosing. Use this Bezier curve for your screenshots below.
 </b>
-<p>
-    YOUR RESPONSE GOES HERE
-</p>
-<!-- Example of including a single figure -->
 <div align="middle">
-  <img src="images/your_file.png" align="middle" width="50%">
-</div>
-<br>
+	<table style="width=100%">
+	  <tr>
+		<td>
+		  <img src="https://media.discordapp.net/attachments/1206892000390156318/1212248274669674536/image.png?ex=65f1252f&is=65deb02f&hm=7df27256f854a98cce0ce72e390eb5dcf18619bdf95f95651620b6a63ca9be4a&=&format=webp&quality=lossless&width=1035&height=662" align="middle" width="400px"/>
+		  <figcaption align="middle">Figure 1: Final 6 point Bezier curve with intermediate points.</figcaption>
+		</td>
+		<td>
+		  <img src="https://media.discordapp.net/attachments/1206892000390156318/1212248321226440724/image.png?ex=65f1253a&is=65deb03a&hm=9375f684c0addc005d5f5474c2c6951f03158659c1bc52ab216905c0086bc7b6&=&format=webp&quality=lossless&width=1041&height=662" align="middle" width="400px"/>
+		  <figcaption align="middle">Figure 2: Final 6 point Bezier curve.</figcaption>
+		</td>
+	  </tr>
+	</table>
+  </div>
 
 <b>
   Show screenshots of each step / level of the evaluation from the original control points down to the final evaluated point. Press <kbd>E</kbd> to step through. Toggle <kbd>C</kbd> to show the completed Bezier curve as well.
 </b>
-<!-- Example of including multiple figures -->
 <div align="middle">
-  <table style="width:100%">
-    <tr align="center">
-      <td>
-        <img src="images/your_file.png" align="middle" width="400px"/>
-        <figcaption>Level 0</figcaption>
-      </td>
-      <td>
-        <img src="images/your_file.png" align="middle" width="400px"/>
-        <figcaption>Level 1</figcaption>
-      </td>
-    </tr>
-    <br>
-    <tr align="center">
-      <td>
-        <img src="images/your_file.png" align="middle" width="400px"/>
-        <figcaption>Level 2</figcaption>
-      </td>
-      <td>
-        <img src="images/your_file.png" align="middle" width="400px"/>
-        <figcaption>Level 3</figcaption>
-      </td>
-    </tr>
-    <br>
-    <tr align="center">
-      <td>
-        <img src="images/your_file.png" align="middle" width="400px"/>
-        <figcaption>Level 4</figcaption>
-      </td>
-    </tr>
-  </table>
-</div>
-<br>
+	<table style="width=100%">
+	  <tr>
+		<td>
+		  <img src="https://media.discordapp.net/attachments/1206892000390156318/1212247928404574221/image.png?ex=65f124dc&is=65deafdc&hm=355da404751147b7b069aba22cab723c777e2ce92612791793b96ae2a71ecd6a&=&format=webp&quality=lossless&width=1061&height=662" align="middle" width="400px"/>
+		  <figcaption align="middle">Figure 3: Step 0.</figcaption>
+		</td>
+		<td>
+		  <img src="https://media.discordapp.net/attachments/1206892000390156318/1212247979394867220/image.png?ex=65f124e8&is=65deafe8&hm=aebc680dd961f811e99a4c71f87a841ee21b5fe9037c8ac4e51cc0087b43a41e&=&format=webp&quality=lossless&width=1065&height=662" align="middle" width="400px"/>
+		  <figcaption align="middle">Figure 4: Step 1.</figcaption>
+		</td>
+	  </tr>
+	  <br>
+	  <tr>
+		<td>
+		  <img src="https://media.discordapp.net/attachments/1206892000390156318/1212248026937294888/image.png?ex=65f124f4&is=65deaff4&hm=812ee86c122182662866ea119a4c45ab7f62919d9037bde67c56341ba5902fd1&=&format=webp&quality=lossless&width=1051&height=662" align="middle" width="400px"/>
+		  <figcaption align="middle">Figure 5: Step 2.</figcaption>
+		</td>
+		<td>
+		  <img src="https://media.discordapp.net/attachments/1206892000390156318/1212248117987250206/image.png?ex=65f12509&is=65deb009&hm=1ae74c58f505340d98649fdc8c3c3398379551acbc1a1433cec75ad8480190f7&=&format=webp&quality=lossless&width=1033&height=662" align="middle" width="400px"/>
+		  <figcaption align="middle">Figure 6: Step 3.</figcaption>
+		</td>
+	  </tr>
+	  <br>
+	  <tr>
+		<td>
+		  <img src="https://media.discordapp.net/attachments/1206892000390156318/1212248165408051230/image.png?ex=65f12515&is=65deb015&hm=1653f309a998f65204effa5250ab946275aedd77218b4677e06f355740466dbf&=&format=webp&quality=lossless&width=1038&height=662" align="middle" width="400px"/>
+		  <figcaption align="middle">Figure 7: Step 4.</figcaption>
+		</td>
+		<td>
+		  <img src="https://media.discordapp.net/attachments/1206892000390156318/1212248217564221441/image.png?ex=65f12521&is=65deb021&hm=de30d5b6447059396b446f15e3ef7c72099e4287b5af2318c0685071f71a21d8&=&format=webp&quality=lossless&width=1052&height=662" align="middle" width="400px"/>
+		  <figcaption align="middle">Figure 8: Step 5.</figcaption>
+		</td>
+	  </tr>
+	  <br>
+	</table>
+  </div>
 
 
 <b>
   Show a screenshot of a slightly different Bezier curve by moving the original control points around and modifying the parameter \(t\) via mouse scrolling.
 </b>
-<p>
-    YOUR RESPONSE GOES HERE
-</p>  
+<div align="middle">
+	<table style="width=100%">
+	  <tr>
+		<td>
+		  <img src="https://media.discordapp.net/attachments/1206892000390156318/1212251491193323520/image.png?ex=65f1282e&is=65deb32e&hm=dfde35fa1e2f36512fa9bef5aca3fd2dfa693f18942a12478bc763108887a44f&=&format=webp&quality=lossless&width=1073&height=662" align="middle" width="800px"/>
+		  <figcaption align="middle">Figure 9: Slightly modified 6 point Bezier curve.</figcaption>
+		</td>
+	  </tr>
+	</table>
+  </div> 
 <br>
 
 
