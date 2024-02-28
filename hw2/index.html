@@ -353,7 +353,6 @@
 <b>
   Take some notes, as well as some screenshots, of your observations on how meshes behave after loop subdivision. What happens to sharp corners and edges? Can you reduce this effect by pre-splitting some edges?
 </b>
-<p>
 	Loop subdivision splits single triangles in the mesh into multiple triangles, making the mesh more rounded and smooth. With enough subdivisions, the object surface becomes completeley smooth to the human eye.
 	<table style="width:100%">
 		<tr align="center">
@@ -371,7 +370,7 @@
 	can be a problem. We could aleviate the smoothing effect by pre splitting the intended sharp edge and flipping two created edges. 
 	Notice the corner edge in the pictures below. With normal subdivision, the edge smooths out, but by pre-splitting the edge then subdividing, it stays sharp.
 	
-<p><div align="middle">
+<div align="middle">
 	  <table style="width:100%">
     <tr align="center">
 	  <img src="https://cdn.discordapp.com/attachments/1206889552627769354/1212186694686871572/image.png?ex=65f0ebd5&is=65de76d5&hm=8cc04ed647dba4258753f707d5d5aebb184029d5beac034aa15aadd984202e50&" align="middle" width="400px"/>
@@ -386,16 +385,13 @@
       </td>
     </tr>
   </table>
-</p>
-</p>
 <br>
 
 
 <b>
   Load dae/cube.dae. Perform several iterations of loop subdivision on the cube. Notice that the cube becomes slightly asymmetric after repeated subdivisions. Can you pre-process the cube with edge flips and splits so that the cube subdivides symmetrically? Document these effects and explain why they occur. Also explain how your pre-processing helps alleviate the effects.
 </b>
-<p>
-    <p><div align="middle">
+<div align="middle">
 	  <table style="width:100%">
     <tr align="center">
 		<td>
@@ -412,7 +408,7 @@
       </td>
     </tr>
   </table>
-  </p>
+<p>
   Uneven subdivision occurs because corner vertices are not connected to other vertices symmetrically.
   Notice how corner 1 has 3 incident triangles and corner 2 has 4 incident triangles.
   <br>
@@ -422,7 +418,8 @@
   Two corners have 3 incident triangles, but the other two have 5.
   To make fullly symmetrical subdivision we can employ the second technique: splitting all the diagonal edges. 
   This way all corners will have 6 incident triangles, allowing for completely symmetric subdivision.
-    <p><div align="middle">
+</p>
+<div align="middle">
 	<table style="width:100%">
     <tr align="center">
       <td>
@@ -435,8 +432,6 @@
       </td>
     </tr>
   </table>
-  </p>
-</p>
 <br>
 
 
@@ -450,8 +445,7 @@
 <b>
     Include a series of screenshots showing your original mesh and your mesh after one and two rounds of subdivision. If you have used custom shaders, include screenshots of your mesh with those shaders applied as well.
 </b>
-<p>
-        <p><div align="middle">
+<div align="middle">
 	  <table style="width:100%">
     <tr align="center">
 		<td>
@@ -468,8 +462,6 @@
       </td>
     </tr>
   </table>
-  </p>
-</p>
 <br>
 
 
