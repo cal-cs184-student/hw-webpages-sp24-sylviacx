@@ -24,7 +24,7 @@
 <body>
 
 <h1 align="middle">CS 184/284A: Computer Graphics and Imaging, Spring 2024</h1>
-<h1 align="middle">Homework 1: Rasterizer</h1>
+<h1 align="middle">Homework 3-1</h1>
 <h2 align="middle">Sylvia Chen, Artem Shumay</h2>
 <div align="middle"> 
 	<p><a href="https://cal-cs184-student.github.io/hw-webpages-sp24-sylviacx/hw3/index.html">https://cal-cs184-student.github.io/hw-webpages-sp24-sylviacx/hw3/index.html</a>
@@ -36,14 +36,74 @@
 <div>
 
 <h2 align="middle">Overview</h2>
-<p> We implemented several rasterization techniques that translate SVG files onto a display. Through these exercises, we gained a lot of experience on various sampling techniques, mipmaps, 
-    and transforms. This homework was especially interesting because we were building new techniques on top of previous implemetations of simpler methods. It was interesting to see how minor 
-    bugs in earlier tasks would go unnoticed, but would completely break later tests. </p>
+<p>
+	Overall, we implemented parts of ray tracing, focusing a lot on rays and intersections between rays and scene objects.
+	Through these exercises, we gained a lot of experience on generating rays, checking intersections, building BVH trees, global illumination, and several techniques of increasing the efficiency of these algorithms.
+	This project was hard to debug, since there were so many moving parts and it was hard to tell what the problem was from looking at the output, but it was also really interesting to see how the lighting accuracy increased with each step!
+	
+</p>
 
 <h3 align="middle">Part 1: Ray Generation and Scene Intersection</h3>
-<p> Walk through the ray generation and primitive intersection parts of the rendering pipeline.
+<p> 
 	Explain the triangle intersection algorithm you implemented in your own words.
 	Show images with normal shading for a few small .dae files. </p>
+
+<h5 align="left">Camera::generate_ray</h5>
+<p> 
+	This function takes in normalized image coordinates (x, y) and returns a Ray struct in world space.  
+	Our camera space is defined by corners (-tan(0.5 * hFov), -tan(0.5  * vFov),  -1) and (tan(0.5 * hFov), tan(0.5  * vFov),  -1), while image space is defined by corners (0, 0) and (1, 1).
+	Thus, we can use simple arithmetic to translate between image and camera coordinates. We set the z coordinate to -1 always. For example, given image coordinate x, we can calculate the camera space coordinate using the formula:
+
+	<div style="text-align: center;">
+		<span style="font-size: 20px;"><b>camera_space_x = -tan(0.5 * hFov) + x * 2 * tan(0.5, hFov)</b></span>
+	</div>
+
+	Then, once we have successfully translated from image to camera space, we multiply the camera space coordinates by the camera-to-world rotation matrix <code>c2w</code>. 
+	Now we can generate a Ray from the original ray's origin <code>pos</code> and world space coordinates of x, y, z.
+	Finally, we set the <code>min_t</code> and <code>max_t</code> of the new ray to <code>nClip</code> and <code>fClip</code> respectively, as said in the spec.
+</p>
+
+<h5 align="left">Triangle Intersection Algorithm</h5>
+<p>
+	To check if a ray intersects a triangle, we use the Moller Trumbore Algorithm as taught in lecture. 
+	We calculate variables E1, E2, S, S1, and S2 according to the algorithm and use arithmetic to get t, b1, and b2. 
+	If the values for t, b1, and b2 are not valid, we return False, since that means the ray does not intersect with the triangle.
+	Otherwise, we update the input ray's max t value with t if t < r.max_t.
+	If <code>t < r.max_t</code>, then we have to update r.max_t since this means that the intersection point we found for this triangle is closer than the max t for this ray.
+	We need to prevent future intersections at t` where t` > t from updating the Intersection data, since those intersections will be farther than t and we are only interested in returning the closest intersection.
+	Finally, we update the Intersection data according to the spec. 
+	For <code>Triangle::has_intersection</code>, we simply call <code>Triangle::intersect</code> without updating the Intersection data.
+</p>
+
+<div align="middle">
+	<table style="width=100%">
+	  <tr>
+		<td>
+		  <img src="https://media.discordapp.net/attachments/1206892000390156318/1216853186690941028/CBempty.png?ex=6601e5d7&is=65ef70d7&hm=628a1653cdce8354e99cf163d5a7707f7689f46d6dfb72ee44f14124b34fb369&=&format=webp&quality=lossless&width=883&height=662" align="middle" width="400px"/>
+		  <figcaption align="middle">CBempty.dae</figcaption>
+		</td>
+		<td>
+			<img src="https://media.discordapp.net/attachments/1206892000390156318/1216853422628929628/CBspheres.png?ex=6601e60f&is=65ef710f&hm=d97cbcfdd82e612cb99d68f097debaefd45d234fc7ed7747570fa653a9896e77&=&format=webp&quality=lossless&width=883&height=662" align="middle" width="400px"/>
+			<figcaption align="middle">CBspheres_lambertian.dae</figcaption>
+		</td>
+	  </tr>
+	</table>
+</div>
+
+<div align="middle">
+	<table style="width=100%">
+	  <tr>
+		<td>
+			<img src="https://media.discordapp.net/attachments/1206892000390156318/1216853871465599006/bunny.png?ex=6601e67b&is=65ef717b&hm=ad96285c3633eee6a52bc3379f7b740d62f528285ddf7d4e1c16adb2602a05b1&=&format=webp&quality=lossless&width=883&height=662" align="middle" width="400px"/>
+			<figcaption align="middle">cow.dae</figcaption>
+		</td>
+		<td>
+			<img src="https://media.discordapp.net/attachments/1206892000390156318/1216853940323225801/bunny.png?ex=6601e68b&is=65ef718b&hm=aed1f98165f866d75b2c060aa9ef1215ab845a1cf6524c4427b67554ee862db8&=&format=webp&quality=lossless&width=883&height=662" align="middle" width="400px"/>
+			<figcaption align="middle">peter.dae</figcaption>
+		</td>
+	  </tr>
+	</table>
+</div>
 
 <h3 align="middle">Part 2: Bounding Volume Hierarchy</h3>
 <p> Walk through your BVH construction algorithm. Explain the heuristic you chose for picking the splitting point.
@@ -72,6 +132,8 @@
 	Show a good sampling rate image with clearly visible differences in sampling rate over various regions and pixels. 
 	Include both your sample rate image, which shows your how your adaptive sampling changes depending on which part of the image you are rendering, and your noise-free rendered result. 
 	Use 1 sample per light and at least 5 for max ray depth. </p>
+
+<h3 align="middle">Partner Collaboration</h3>
 
 </body>
 </html>
