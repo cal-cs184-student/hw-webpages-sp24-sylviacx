@@ -45,7 +45,7 @@
 
 <h3 align="middle">Part 1: Ray Generation and Scene Intersection</h3>
 
-<h5 align="left">Camera::generate_ray</h5>
+<h4 align="left">Camera::generate_ray</h4>
 <p> 
 	This function takes in normalized image coordinates (x, y) and returns a Ray struct in world space.  
 	Our camera space is defined by corners (-tan(0.5 * hFov), -tan(0.5  * vFov),  -1) and (tan(0.5 * hFov), tan(0.5  * vFov),  -1), while image space is defined by corners (0, 0) and (1, 1).
@@ -60,7 +60,7 @@
 	Finally, we set the <code>min_t</code> and <code>max_t</code> of the new ray to <code>nClip</code> and <code>fClip</code> respectively, as said in the spec.
 </p>
 
-<h5 align="left">Triangle Intersection Algorithm</h5>
+<h4 align="left">Triangle Intersection Algorithm</h4>
 <p>
 	To check if a ray intersects a triangle, we use the Moller Trumbore Algorithm as taught in lecture. 
 	We calculate variables E1, E2, S, S1, and S2 according to the algorithm and use arithmetic to get t, b1, and b2. 
@@ -72,7 +72,7 @@
 	For <code>Triangle::has_intersection</code>, we simply call <code>Triangle::intersect</code> without updating the Intersection data.
 
 	<div align="middle">
-		<table style="width=100%">
+		<table style="width:100%">
 		  <tr>
 			<td>
 			  <img src="https://media.discordapp.net/attachments/1206892000390156318/1216854931982778398/image.png?ex=6601e777&is=65ef7277&hm=fdd52494aa2c7c0fd4a56af4261b6b6da662c51eb936f97736441695650a9ae1&=&format=webp&quality=lossless&width=822&height=563" align="middle" width="800px"/>
@@ -84,7 +84,7 @@
 </p>
 
 <div align="middle">
-	<table style="width=100%">
+	<table style="width:100%">
 	  <tr>
 		<td>
 		  <img src="https://media.discordapp.net/attachments/1206892000390156318/1216853186690941028/CBempty.png?ex=6601e5d7&is=65ef70d7&hm=628a1653cdce8354e99cf163d5a7707f7689f46d6dfb72ee44f14124b34fb369&=&format=webp&quality=lossless&width=883&height=662" align="middle" width="400px"/>
@@ -104,7 +104,7 @@
 
 <h3 align="middle">Part 2: Bounding Volume Hierarchy</h3>
 
-<h5 align="left">BVHAccel::construct_bvh</h5>
+<h4 align="left">BVHAccel::construct_bvh</h4>
 <p>
 	We chose to split our BVH tree such that the left and right nodes would have an equal number of primitives in them by splitting on the median left bound with respect to the axis with the largest extent.
 	First, we created a new BVHNode from a bbox with all the primitives from start to end. 
@@ -116,7 +116,7 @@
 </p>
 
 <div align="middle">
-	<table style="width=100%">
+	<table style="width:100%">
 	  <tr>
 		<td>
 		  <img src="https://media.discordapp.net/attachments/1206892044363239485/1216858247756124441/cow.png?ex=6601ea8e&is=65ef758e&hm=450803d1a794545d638fdc51e8b2e663eaaf41525a7042a573fe765dcf28b76a&=&format=webp&quality=lossless&width=883&height=662" align="middle" width="400px"/>
@@ -143,7 +143,7 @@
 </p>
 
 <div align="middle">
-	<table style="width=100%">
+	<table style="width:100%">
 	  <tr>
 		<td>
 		  <img src="https://media.discordapp.net/attachments/1206892044363239485/1216861114223169677/cow.png?ex=6601ed39&is=65ef7839&hm=126d8b9254031875720ebb4dae4510e9c7945f4e819c27ab25070619d650780b&=&format=webp&quality=lossless&width=883&height=662" align="middle" width="400px"/>
@@ -157,7 +157,7 @@
 	</table>
 </div>
 <div align="middle">
-	<table style="width=100%">
+	<table style="width:100%">
 	  <tr>
 		<td>
 		  <img src="https://media.discordapp.net/attachments/1206892044363239485/1216861455073149058/cow.png?ex=6601ed8b&is=65ef788b&hm=eb1c4cb5e9367c6138b8b9a01c9c98889ba2bf33ed00cffc27f42507e85fa44b&=&format=webp&quality=lossless&width=883&height=662" align="middle" width="400px"/>
@@ -171,7 +171,7 @@
 	</table>
 </div>
 <div align="middle">
-	<table style="width=100%">
+	<table style="width:100%">
 	  <tr>
 		<td>
 		  <img src="https://media.discordapp.net/attachments/1206892044363239485/1216861642424320061/cow.png?ex=6601edb7&is=65ef78b7&hm=496345295780035977ff889c0bca64dbbb5aec46e0b225707cc512a0163daab7&=&format=webp&quality=lossless&width=883&height=662" align="middle" width="400px"/>
