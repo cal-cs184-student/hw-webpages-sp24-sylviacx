@@ -44,9 +44,6 @@
 </p>
 
 <h3 align="middle">Part 1: Ray Generation and Scene Intersection</h3>
-<p> 
-	Explain the triangle intersection algorithm you implemented in your own words.
-	Show images with normal shading for a few small .dae files. </p>
 
 <h5 align="left">Camera::generate_ray</h5>
 <p> 
@@ -97,29 +94,96 @@
 			<img src="https://media.discordapp.net/attachments/1206892000390156318/1216853422628929628/CBspheres.png?ex=6601e60f&is=65ef710f&hm=d97cbcfdd82e612cb99d68f097debaefd45d234fc7ed7747570fa653a9896e77&=&format=webp&quality=lossless&width=883&height=662" align="middle" width="400px"/>
 			<figcaption align="middle">CBspheres_lambertian.dae</figcaption>
 		</td>
-	  </tr>
-	</table>
-</div>
-
-<div align="middle">
-	<table style="width=100%">
-	  <tr>
 		<td>
 			<img src="https://media.discordapp.net/attachments/1206892000390156318/1216853871465599006/bunny.png?ex=6601e67b&is=65ef717b&hm=ad96285c3633eee6a52bc3379f7b740d62f528285ddf7d4e1c16adb2602a05b1&=&format=webp&quality=lossless&width=883&height=662" align="middle" width="400px"/>
 			<figcaption align="middle">cow.dae</figcaption>
-		</td>
-		<td>
-			<img src="https://media.discordapp.net/attachments/1206892000390156318/1216853940323225801/bunny.png?ex=6601e68b&is=65ef718b&hm=aed1f98165f866d75b2c060aa9ef1215ab845a1cf6524c4427b67554ee862db8&=&format=webp&quality=lossless&width=883&height=662" align="middle" width="400px"/>
-			<figcaption align="middle">peter.dae</figcaption>
 		</td>
 	  </tr>
 	</table>
 </div>
 
 <h3 align="middle">Part 2: Bounding Volume Hierarchy</h3>
-<p> Walk through your BVH construction algorithm. Explain the heuristic you chose for picking the splitting point.
-	Show images with normal shading for a few large .dae files that you can only render with BVH acceleration.
-	Compare rendering times on a few scenes with moderately complex geometries with and without BVH acceleration. Present your results in a one-paragraph analysis. </p>
+
+<h5 align="left">BVHAccel::construct_bvh</h5>
+<p>
+	We chose to split our BVH tree such that the left and right nodes would have an equal number of primitives in them by splitting on the median left bound with respect to the axis with the largest extent.
+	First, we created a new BVHNode from a bbox with all the primitives from start to end. 
+	If the number of primitives inside the bbox was less than <code>max_leaf_size</code>, then we would just need to set the new node's start and end, without recursing.
+	Otherwise, we sorted start to end in order of increasising min.{axis} values, where the axis is the axis with the longest extent. 
+	Finally, we recursed by setting the new node's left and right child to recursive calls to <code>construct_bvh</code>. 
+	<code>node->l</code> becomes a BVH tree from start to the median primitive.
+	<code>node->r</code> becomes a BVH tree from the median primitive to end.
+</p>
+
+<div align="middle">
+	<table style="width=100%">
+	  <tr>
+		<td>
+		  <img src="https://media.discordapp.net/attachments/1206892044363239485/1216858247756124441/cow.png?ex=6601ea8e&is=65ef758e&hm=450803d1a794545d638fdc51e8b2e663eaaf41525a7042a573fe765dcf28b76a&=&format=webp&quality=lossless&width=883&height=662" align="middle" width="400px"/>
+		  <figcaption align="middle">maxplanck.dae</figcaption>
+		</td>
+		<td>
+			<img src="https://media.discordapp.net/attachments/1206892044363239485/1216858392635899994/cow.png?ex=6601eab0&is=65ef75b0&hm=02c8baa4bfeb99e171968b908d29c736ca8e4aaf55ae8ba990422b8d2babf113&=&format=webp&quality=lossless&width=883&height=662" align="middle" width="400px"/>
+			<figcaption align="middle">CBlucy.dae</figcaption>
+		</td>
+		<td>
+			<img src="https://media.discordapp.net/attachments/1206892044363239485/1216859318691954859/cow.png?ex=6601eb8d&is=65ef768d&hm=ed1c0da05e50075377e7ee2d68cf5a61a2d077646d7b0d5addd27b1e2f9265a3&=&format=webp&quality=lossless&width=883&height=662" align="middle" width="400px"/>
+			<figcaption align="middle">CBdragon.dae</figcaption>
+		</td>
+	  </tr>
+	</table>
+</div>
+
+<p>
+	We tried rendering 3 moderately complex geometries with and without BVH acceleration, and found that the difference was drastic. 
+	CBcoil.dae took about 40 seconds to render without BVH acceleration, but only took about 0.05 seconds to render with BVH acceleration.
+	CBgems.dae took about 1.3 seconds to render without BVH acceleration, but only took 0.05 seconds to render with BVH acceleration.
+	teapot.dae took about 12 seconds to render without BVH acceleration, but only took 0.09 seconds to render with BVH acceleration.
+	From these observations, it is clear that BVH acceleration greatly improves performance of rendering.
+</p>
+
+<div align="middle">
+	<table style="width=100%">
+	  <tr>
+		<td>
+		  <img src="https://media.discordapp.net/attachments/1206892044363239485/1216861114223169677/cow.png?ex=6601ed39&is=65ef7839&hm=126d8b9254031875720ebb4dae4510e9c7945f4e819c27ab25070619d650780b&=&format=webp&quality=lossless&width=883&height=662" align="middle" width="400px"/>
+		  <figcaption align="middle">CBcoil.dae without BVH: 39.9075s</figcaption>
+		</td>
+		<td>
+			<img src="https://media.discordapp.net/attachments/1206892044363239485/1216862293699203102/cow.png?ex=6601ee53&is=65ef7953&hm=4f85434b23c635935bfa8293bd8f1e4eb4debf2c4d2ab0dfc079e77aeb71bd45&=&format=webp&quality=lossless&width=883&height=662" align="middle" width="400px"/>
+			<figcaption align="middle">CBcoil.dae with BVH: 0.0487s</figcaption>
+		</td>
+	  </tr>
+	</table>
+</div>
+<div align="middle">
+	<table style="width=100%">
+	  <tr>
+		<td>
+		  <img src="https://media.discordapp.net/attachments/1206892044363239485/1216861455073149058/cow.png?ex=6601ed8b&is=65ef788b&hm=eb1c4cb5e9367c6138b8b9a01c9c98889ba2bf33ed00cffc27f42507e85fa44b&=&format=webp&quality=lossless&width=883&height=662" align="middle" width="400px"/>
+		  <figcaption align="middle">CBgems.dae without BVH: 1.3114s</figcaption>
+		</td>
+		<td>
+			<img src="https://media.discordapp.net/attachments/1206892044363239485/1216862187570860194/cow.png?ex=6601ee39&is=65ef7939&hm=9e248c5c594be875575250455e145307e893e847bdce98f59028ac986817dfbb&=&format=webp&quality=lossless&width=883&height=662" align="middle" width="400px"/>
+			<figcaption align="middle">CBgems.dae with BVH: 0.0560s</figcaption>
+		</td>
+	  </tr>
+	</table>
+</div>
+<div align="middle">
+	<table style="width=100%">
+	  <tr>
+		<td>
+		  <img src="https://media.discordapp.net/attachments/1206892044363239485/1216861642424320061/cow.png?ex=6601edb7&is=65ef78b7&hm=496345295780035977ff889c0bca64dbbb5aec46e0b225707cc512a0163daab7&=&format=webp&quality=lossless&width=883&height=662" align="middle" width="400px"/>
+		  <figcaption align="middle">teapot.dae without BVH: 12.1659s</figcaption>
+		</td>
+		<td>
+			<img src="https://media.discordapp.net/attachments/1206892044363239485/1216862046071820419/cow.png?ex=6601ee17&is=65ef7917&hm=8d73e6e7783b0159192aa06fcade6240c4160b7c10ec034ff7a40cf573d75798&=&format=webp&quality=lossless&width=883&height=662" align="middle" width="400px"/>
+			<figcaption align="middle">teapot.dae with BVH: 0.0930s</figcaption>
+		</td>
+	  </tr>
+	</table>
+</div>
 	
 <h3 align="middle">Part 3: Direct Illumination</h3>
 <p> Walk through both implementations of the direct lighting function.
