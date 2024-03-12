@@ -333,13 +333,62 @@
 	You will probably want to use the instructional machines for the above renders in order to not burn up your own computer for hours. </p>
 
 <h3 align="middle">Part 5: Adaptive Sampling</h3>
-<p> Explain adaptive sampling. Walk through your implementation of the adaptive sampling.
-	Pick two scenes and render them with at least 2048 samples per pixel. 
-	Show a good sampling rate image with clearly visible differences in sampling rate over various regions and pixels. 
-	Include both your sample rate image, which shows your how your adaptive sampling changes depending on which part of the image you are rendering, and your noise-free rendered result. 
-	Use 1 sample per light and at least 5 for max ray depth. </p>
+<p>
+	Conceptually, adaptive sampling is an algorithm that uses higher sample rates on difficult to render parts of the image, while using lower sample rates on the easier parts.
+	This allows us to remove noise without uniformly raising the sampling rate, since some pixels won't need a higher sampling rate to reduce noise. 
+	We implemented the same algorithm presented in the spec, which starts keeping track of 2 variables, s1 and s2.
+	s1 is the sum of illuminances for all samples for this pixel, and s2 is the sum of squared illumances for all samples for this pixel. 
+	Every time we sample a factor of <code>samplesPerBatch</code> number of samples, we check if <code>I <= maxTolerance * μ</code>, where:
 
-<h3 align="middle">Partner Collaboration</h3>
+	<div style="text-align: center;">
+		<span style="font-size: 20px;"><b>n = number of samples so far</b></span>
+	</div>
+
+	<div style="text-align: center;">
+		<span style="font-size: 20px;"><b>μ = s1 / n</b></span>
+	</div>
+
+	<div style="text-align: center;">
+		<span style="font-size: 20px;"><b>σ = (1 / (n - 1)) * (s2 - s1<sup>2</sup>/n)</b></span>
+	</div>
+
+	<div style="text-align: center;">
+		<span style="font-size: 20px;"><b>I = 1.96 * (σ / √n)</b></span>
+	</div>
+
+	If the condition is true, we break out of the sampling loop and record whatever number of samples we ended with. 
+	We also break out of the loop once we reach <code>num_samples</code> number of pixels.
+	This way, for each pixel, we sample at most <code>num_samples</code> times, depending on its complexity.
+</p>
+
+<div align="middle">
+	<table style="width: 100%">
+	  <tr align="center">
+		<td>
+		  <img src="https://media.discordapp.net/attachments/1206890319845523516/1217226928696594552/bunny.png?ex=660341ea&is=65f0ccea&hm=6303054d7c451ab3d6e20fb4882a9477f2bb4175c9e1e6f0f6468275184c1f52&=&format=webp&quality=lossless&width=600&height=450" align="middle" width="400px"/>
+		  <figcaption align="middle">CBbunny.dae</figcaption>
+		</td>
+		<td>
+			<img src="https://media.discordapp.net/attachments/1206890319845523516/1217226954051289159/bunny_rate.png?ex=660341f0&is=65f0ccf0&hm=f8da6aa0c3f1ca89ea031ebe36efca19157be9c7f213dd0e4427f5a7636f2ef4&=&format=webp&quality=lossless&width=600&height=450" align="middle" width="400px"/>
+			<figcaption align="middle">Sample rate image for CBbunny.dae</figcaption>
+		</td>
+	  </tr>
+	</table>
+</div>
+<div align="middle">
+	<table style="width: 100%">
+	  <tr align="center">
+		<td>
+		  <img src="https://media.discordapp.net/attachments/1206890319845523516/1217227669024800768/bunny.png?ex=6603429b&is=65f0cd9b&hm=8294c8a3950866e2cce48fc66c597f82baf93ea120884fd63c15b29dd2296d00&=&format=webp&quality=lossless&width=600&height=450" align="middle" width="400px"/>
+		  <figcaption align="middle">CBspheres_lambertian.dae</figcaption>
+		</td>
+		<td>
+			<img src="https://media.discordapp.net/attachments/1206890319845523516/1217227727346733168/bunny_rate.png?ex=660342a9&is=65f0cda9&hm=342cca88b830ade85f351637bf9b16558902d09832777f8285b76e7b7f348757&=&format=webp&quality=lossless&width=600&height=450" align="middle" width="400px"/>
+			<figcaption align="middle">Sample rate image for CBspheres_lambertian</figcaption>
+		</td>
+	  </tr>
+	</table>
+</div>
 
 </body>
 </html>
