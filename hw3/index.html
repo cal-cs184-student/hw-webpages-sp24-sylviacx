@@ -213,6 +213,115 @@
 	Focus on one particular scene with at least one area light and compare the noise levels in soft shadows when rendering with 1, 4, 16, and 64 light rays (the -l flag) and with 1 sample per pixel (the -s flag) using light sampling, not uniform hemisphere sampling.
 	Compare the results between uniform hemisphere sampling and lighting sampling in a one-paragraph analysis.</p>
 
+<h4 align="left">PathTracer::estimate_direct_lighting_hemisphere</h4>
+<p>
+	The first implementation of direct lighting uses uniform hemisphere sampling. 
+	Conceptually, this technique shoots rays from a hit point in uniformly random directions sampled from a hemisphere about the point, checking whether or not the ray intersects with objects in the scene.
+	Depending on the intersection, we can then use the Monte Carlo estimation of the reflection equation to determine how much light is reflected to the camera from the hit point.
+	In further detail, this technique samples <code>scene->lights.size() * ns_area_light</code> directional vectors (wj) from the hemisphere at random.
+	We then convert these directional vectors into world space and use them to create rays originating from hit_p.
+	We set the rays' min_t to EPS_F to account for small precision errors, as instructed by the spec.
+	If a new ray intersects with something in our BVH tree, we add to our sum using the Monte Carlo estimation of the reflectance equation.
+
+	<div align="middle">
+		<table style="width: 100%">
+		  <tr align="center">
+			<td>
+			  <img src="https://media.discordapp.net/attachments/1206892064411750410/1216912819040161822/image.png?ex=66021d61&is=65efa861&hm=174d1f9727875d38d605b38f81664afdef7e521735cdbdb82e2feafff041d685&=&format=webp&quality=lossless&width=608&height=138" align="middle" width="400px"/>
+			</td>
+		  </tr>
+		</table>
+	</div>
+
+	In our implementation, isect.bsdf->f is our fr function, Li is the bsdf emission of the intersectio point, cos(theta) is the z coordinate of object space wj, and pdf is 1 / 2 * pi.
+	Finally, once we have finished creating rays, we average the sum by dividing by number of samples.
+</p>
+
+<h4 align="left">PathTracer::estimate_direct_lighting_importance</h4>
+<p>
+	The second implementation of direct lighting uses importance sampling.
+	Conceptually, this technique aims to improve the noisiness of the previous method by sampling rays originating from a hit point directly to each light source in the scene.
+	Instead of sampling a number of uniformly random rays about a hemisphere regardless of the number of light sources, in importance sampling we sample ns_area_light directional vectors (wi) for each light source.
+	However, if the light source is a point light source, we only need to sample once. 
+	If the z component of object space wi is less than 0, then that means the light source is behind our hit point and we don't need to continue. 
+	Otherwise, we generate a ray from world space wi and originating at the hit point, but we also set its max_t to dst - ESP_F since we only care about intersections before the light source.
+	In this implementation, an intersection means there is something obstructing the light source from the hit point, so we are conditioned on NOT intersecting the BVH tree. 
+	For each light, we keep a running sum of the reflection from this light, calculated using the same Monte Carlo estimation of the reflectance equation from the previous implementation.
+	In our implementation, isect.bsdf->f is our fr function, Li is radiance returned by scene->lights[i]->sample_L, cos(theta) is the z coordinate of object space wi, and pdf is determined by scene->lights[i]->sample_L.
+	Once we finish iterating over all the samples for a light i, we add the average light reflection of light i into a running total sum.
+	Once we finish iterating over all the lights, we return the average of the running total sum.
+</p>
+
+<div align="middle">
+	<table style="width: 100%">
+	  <tr align="center">
+		<td>
+		  <img src="https://media.discordapp.net/attachments/1206892064411750410/1216925148905476146/CBbunny_H_64_32.png?ex=660228dc&is=65efb3dc&hm=ccb9e652668d0d44d478291baf273b6cba98f39cc0a107dd321bebe023bb7cdd&=&format=webp&quality=lossless&width=600&height=450" align="middle" width="400px"/>
+		  <figcaption align="middle">CBbunny.dae with uniform hemipshere sampling</figcaption>
+		</td>
+		<td>
+			<img src="https://media.discordapp.net/attachments/1206892064411750410/1217180224026841119/bunny_64_32.png?ex=6603166b&is=65f0a16b&hm=2c8c435754d552c80b257abb17b9aa10b6b77366341bf96d8d31166b6ded7b70&=&format=webp&quality=lossless&width=600&height=450" align="middle" width="400px"/>
+			<figcaption align="middle">CBbunny.dae with importance sampling</figcaption>
+		</td>
+	  </tr>
+	</table>
+</div>
+<div align="middle">
+	<table style="width: 100%">
+	  <tr align="center">
+		<td>
+		  <img src="https://media.discordapp.net/attachments/1206892064411750410/1217179476635553862/CBbunny_H_64_32.png?ex=660315b9&is=65f0a0b9&hm=44be9dbb2823ccfbbc463c36aa41a925b074034f42aff9fb686f9ce24b6358ff&=&format=webp&quality=lossless&width=600&height=450" align="middle" width="400px"/>
+		  <figcaption align="middle">CBspheres_lambertian.dae with uniform hemipshere sampling</figcaption>
+		</td>
+		<td>
+			<img src="https://media.discordapp.net/attachments/1206892064411750410/1217180506571931720/bunny_64_32.png?ex=660316ae&is=65f0a1ae&hm=7fff5fa3509d821a5167af651653ad61772ef1e62dddbd1c213f914523bc16ab&=&format=webp&quality=lossless&width=600&height=450" align="middle" width="400px"/>
+			<figcaption align="middle">CBspheres_lambertian.dae with importance sampling</figcaption>
+		</td>
+	  </tr>
+	</table>
+</div>
+
+<p>
+	With a lower number of rays, we can see that noise in the soft shadows are higher in comparison to shadows formed from a higher number of rays.
+</p>
+
+<div align="middle">
+	<table style="width: 100%">
+	  <tr align="center">
+		<td>
+		  <img src="https://media.discordapp.net/attachments/1206892064411750410/1217182479807414312/bunny_64_32.png?ex=66031885&is=65f0a385&hm=7392f606ba2a95a4a0c91b9fd869a26ba43958b52e80d7eb6a76d960541c28a7&=&format=webp&quality=lossless&width=600&height=450" align="middle" width="400px"/>
+		  <figcaption align="middle">Importance sampling: 1 sample per pixel, 1 light ray</figcaption>
+		</td>
+		<td>
+			<img src="https://media.discordapp.net/attachments/1206892064411750410/1217182602113323028/bunny_64_32.png?ex=660318a2&is=65f0a3a2&hm=b771e359a25a00ec2bf1887a1c7b7e47073108bd25f25bf416e27c7261472e58&=&format=webp&quality=lossless&width=600&height=450" align="middle" width="400px"/>
+			<figcaption align="middle">Importance sampling: 1 sample per pixel, 4 light rays</figcaption>
+		</td>
+	  </tr>
+	</table>
+</div>
+<div align="middle">
+	<table style="width: 100%">
+	  <tr align="center">
+		<td>
+		  <img src="https://media.discordapp.net/attachments/1206892064411750410/1217182712415256646/bunny_64_32.png?ex=660318bc&is=65f0a3bc&hm=b59737a58db1a42007b34e4a9e04655375ce7680a55e6c873fe39d8aa288d4ea&=&format=webp&quality=lossless&width=600&height=450" align="middle" width="400px"/>
+		  <figcaption align="middle">Importance sampling: 1 sample per pixel, 16 light rays</figcaption>
+		</td>
+		<td>
+			<img src="https://media.discordapp.net/attachments/1206892064411750410/1217182817822441612/bunny_64_32.png?ex=660318d5&is=65f0a3d5&hm=9b35571c1654579c508d81c7f5d4fc0cff0a8a774ee9643568883c70fc9d8eb8&=&format=webp&quality=lossless&width=600&height=450" align="middle" width="400px"/>
+			<figcaption align="middle">Importance sampling: 1 sample per pixel, 64 light rays</figcaption>
+		</td>
+	  </tr>
+	</table>
+</div>
+
+<p>
+	From this part, we have observed that uniform hemisphere sampling results in overall noisier renders. 
+	While the shadows and highlights are still soft, visually it looks like there is a grain filter over the entire image.
+	Furthermore, the images produced by uniform hemisphere sampling have a blur around the light source in the ceiling.
+	In comparison, the images generated from importance sampling have smooth, grainless walls and the light source is in a cleanly cut rectangle.
+	However, with a lower number of rays, importance sampling also produces grainy images.
+</p>
+
 <h3 align="middle">Part 4: Global Illumination</h3>
 <p> Walk through your implementation of the indirect lighting function.
 	Show some images rendered with global (direct and indirect) illumination. Use 1024 samples per pixel.
