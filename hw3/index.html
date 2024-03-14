@@ -322,15 +322,231 @@
 	However, with a lower number of rays, importance sampling also produces grainy images.
 </p>
 
-<h3 align="middle">Part 4: Global Illumination</h3>
-<p> Walk through your implementation of the indirect lighting function.
-	Show some images rendered with global (direct and indirect) illumination. Use 1024 samples per pixel.
-	Pick one scene and compare rendered views first with only direct illumination, then only indirect illumination. Use 1024 samples per pixel. (You will have to edit PathTracer::at_least_one_bounce_radiance(...) in your code to generate these views.)
-	For CBbunny.dae, render the mth bounce of light with max_ray_depth set to 0, 1, 2, 3, 4, and 5 (the -m flag), and isAccumBounces=false. Explain in your writeup what you see for the 2nd and 3rd bounce of light, and how it contributes to the quality of the rendered image compared to rasterization. Use 1024 samples per pixel.
-	For CBbunny.dae, compare rendered views with max_ray_depth set to 0, 1, 2, 3, 4, and 5(the -m flag). Use 1024 samples per pixel.
-	For CBbunny.dae, output the Russian Roulette rendering with max_ray_depth set to 0, 1, 2, 3, 4, and 100(the -m flag). Use 1024 samples per pixel.
-	Pick one scene and compare rendered views with various sample-per-pixel rates, including at least 1, 2, 4, 8, 16, 64, and 1024. Use 4 light rays.
-	You will probably want to use the instructional machines for the above renders in order to not burn up your own computer for hours. </p>
+<h3 align="middle">Part 4: Global Illumination (20 Points)</h3>
+<!-- Walk through your implementation of the indirect lighting function.
+Show some images rendered with global (direct and indirect) illumination. Use 1024 samples per pixel.
+Pick one scene and compare rendered views first with only direct illumination, then only indirect illumination. Use 1024 samples per pixel. (You will have to edit PathTracer::at_least_one_bounce_radiance(...) in your code to generate these views.)
+For CBbunny.dae, compare rendered views with max_ray_depth set to 0, 1, 2, 3, and 100 (the -m flag). Use 1024 samples per pixel.
+Pick one scene and compare rendered views with various sample-per-pixel rates, including at least 1, 2, 4, 8, 16, 64, and 1024. Use 4 light rays.
+You will probably want to use the instructional machines for the above renders in order to not burn up your own computer for hours. -->
+
+<p>
+    For our indirect lighting function, we first check Russian Roulette chance or if the ray is at it's max depth. If any of those conditions are true we finish. 
+	Otherwise we estimate one bounce radiance of the current ray, cast another ray from hit_point, and using the recursive radiance estimation from the new ray sum it to current ray (using formula for direct lighting).  
+</p>
+<br>
+
+<!-- Example of including multiple figures -->
+<div align="middle">
+  <table style="width:100%">
+    <tr align="center">
+      <td>
+        <img src="https://cdn.discordapp.com/attachments/1206889873798332446/1217356365391990794/spheres_global.png?ex=6603ba76&is=65f14576&hm=5048f62d01974b51bd19c45b97c78a3d1ea01e475665604fe2308cabf85900db&" align="middle" width="400px"/>
+        <figcaption>Spheres.dae rendered with global illumination</figcaption>
+      </td>
+      <td>
+        <img src="https://cdn.discordapp.com/attachments/1206889873798332446/1217361027273068574/coil.png?ex=6603bece&is=65f149ce&hm=d28d9b7eeec946a01f806d397c1ad1ed3e0333d090395599bdae49e9179d4727&" align="middle" width="400px"/>
+        <figcaption>Dragon.dae rendered with global illumination</figcaption>
+      </td>
+    </tr>
+  </table>
+</div>
+
+<p>
+    Below are 2 images of dragon.dae, one with only direct illumation and one with only indirect illumination.
+	For only direct we only see parts of the dragon directly hitting the light. For the indirect we see how much light is gotten from the second bounce of light.
+	Notice how parts which were darker on first image are lighter on second one, this is because some parts may not get direct light, but can get light reflected off other surfaces.
+	This is how indirect lighting lights up parts of the mesh in shadow.
+</p>
+<!-- Example of including multiple figures -->
+<div align="middle">
+  <table style="width:100%">
+    <tr align="center">
+      <td>
+        <img src="https://cdn.discordapp.com/attachments/1206889873798332446/1217374552611491850/dragon_direct.png?ex=6603cb67&is=65f15667&hm=cdd67894d9681fd290651aa4dfd2b5eff7992fa2beeadd4963fe55d252f9c142&" align="middle" width="400px"/>
+        <figcaption>Only direct illumination (dragon.dae)</figcaption>
+      </td>
+      <td>
+        <img src="https://cdn.discordapp.com/attachments/1206889873798332446/1217370876656222298/coil.png?ex=6603c7fa&is=65f152fa&hm=f61d68aeecc3f5656ae166a34d888208a1811116751239c4022c475aebf650ce&" align="middle" width="400px"/>
+        <figcaption>Only indirect illumination (dragon.dae)</figcaption>
+      </td>
+    </tr>
+  </table>
+</div>
+<br>
+
+<p>
+	Below are renders of CBunny.dae with max_ray_depth set to 0, 1, 2, 3, 4, and 5 (the -m flag), and isAccumBounces=false.
+    On each image we see light from mth bounce of light. First one is direct. Second one and further is light from other surfaces reflecting light.
+	Bounces are blended to the original image, so we can see how their significance decreases with further bounces. However, without them parts of the object obscured from the light source would be completely black.
+</p>
+<div align="middle">
+  <table style="width:100%">
+    <tr align="center">
+      <td>
+        <img src="https://cdn.discordapp.com/attachments/1217346917214716044/1217347067958005821/bunny_no_accum0.png?ex=6603b1ce&is=65f13cce&hm=639a69013ba80c4b530d50f32a1e4a5be8b44aa1b388242e7a7c16a4a3edff86&" align="middle" width="400px"/>
+        <figcaption>max_ray_depth = 0 (CBbunny.dae)</figcaption>
+      </td>
+      <td>
+        <img src="https://cdn.discordapp.com/attachments/1217346917214716044/1217347079970619413/bunny_no_accum1.png?ex=6603b1d1&is=65f13cd1&hm=a4d304bccec674be2e253d53a9b2ea46fae6e06908a2d3da00599d4c54ca5646&" align="middle" width="400px"/>
+        <figcaption>max_ray_depth = 1 (CBbunny.dae)</figcaption>
+      </td>
+    </tr>
+    <tr align="center">
+      <td>
+        <img src="https://cdn.discordapp.com/attachments/1217346917214716044/1217347538550784000/bunny_no_accum2.png?ex=6603b23e&is=65f13d3e&hm=396c8978ab9380369a6393eedf272a0879e358bb0134121ac586265729c226da&	" align="middle" width="400px"/>
+        <figcaption>max_ray_depth = 2 (CBbunny.dae)</figcaption>
+      </td>
+      <td>
+        <img src="https://cdn.discordapp.com/attachments/1217346917214716044/1217347546570297344/bunny_no_accum3.png?ex=6603b240&is=65f13d40&hm=21bd3ce18e6ff85366d38e7a3da9f243050b92dd9ce029f53f3d21bdeb002ad5&" align="middle" width="400px"/>
+        <figcaption>max_ray_depth = 3 (CBbunny.dae)</figcaption>
+      </td>
+    </tr>
+    <tr align="center">
+      <td>
+        <img src="https://cdn.discordapp.com/attachments/1217346917214716044/1217347556229517362/bunny_no_accum4.png?ex=6603b242&is=65f13d42&hm=9b40021d978888413ccc76ab8ad6986ac0d764503c5457cdb2b249a356a45db0&" align="middle" width="400px"/>
+        <figcaption>max_ray_depth = 4 (CBbunny.dae)</figcaption>
+      </td>
+		<td>
+		<img src="https://cdn.discordapp.com/attachments/1217346917214716044/1217352007375917176/bunny_no_accum5.png?ex=6603b667&is=65f14167&hm=9d0721eec79d53e2471be996c93a5225b943996a70055d4d3da1b823bf199dde&" align="middle" width="400px"/>
+		<figcaption>max_ray_depth = 5 (CBbunny.dae)</figcaption>
+      </td>
+    </tr>
+  </table>
+</div>
+<br>
+
+<p>
+	Below are renders of CBbunny.dae with max_ray_depth set to 0, 1, 2, 3, 4, and 5 (the -m flag), and isAccumBounces=true.
+    Here we see bunny with accumulated ray bounces. We can see a very visible change between m=1 and m=2, but less between next ones. This is because each consecutive light bounce contributes less to the overall image.	
+</p>
+<div align="middle">
+  <table style="width:100%">
+    <tr align="center">
+      <td>
+        <img src="https://cdn.discordapp.com/attachments/1217346917214716044/1217346991114424400/bunny_accum0.png?ex=6603b1bb&is=65f13cbb&hm=cdd6b616cd893f288e6c698d87639f12eb7e953c6485097f6119f062829c5478&" align="middle" width="400px"/>
+        <figcaption>max_ray_depth = 0 (CBbunny.dae)</figcaption>
+      </td>
+      <td>
+        <img src="https://cdn.discordapp.com/attachments/1217346917214716044/1217347001625215027/bunny_accum1.png?ex=6603b1be&is=65f13cbe&hm=cc20225fbf91e95acb99b3e4f5ec2d7caa4963a420ded4094f9c339d6f4758ae&" align="middle" width="400px"/>
+        <figcaption>max_ray_depth = 1 (CBbunny.dae)</figcaption>
+      </td>
+    </tr>
+    <tr align="center">
+      <td>
+        <img src="https://cdn.discordapp.com/attachments/1217346917214716044/1217347014811975731/bunny_accum2.png?ex=6603b1c1&is=65f13cc1&hm=612977dbb7e4835af203b9388b4528a4912010ba3a14dc016056394193265431&" align="middle" width="400px"/>
+        <figcaption>max_ray_depth = 2 (CBbunny.dae)</figcaption>
+      </td>
+      <td>
+        <img src="https://cdn.discordapp.com/attachments/1217346917214716044/1217347029664268288/bunny_accum3.png?ex=6603b1c5&is=65f13cc5&hm=c60b0bbde5da6f17b4a543e40739a0cdf2a2b1c0c146de520aa07515b6b349e8&" align="middle" width="400px"/>
+        <figcaption>max_ray_depth = 3 (CBbunny.dae)</figcaption>
+      </td>
+    </tr>
+    <tr align="center">
+      <td>
+        <img src="https://cdn.discordapp.com/attachments/1217346917214716044/1217347041441611886/bunny_accum4.png?ex=6603b1c7&is=65f13cc7&hm=8820ad416a4163eb2ad7fd0e24c0b818c86fe34ee0ef78b2b5eb675f33842084&" align="middle" width="400px"/>
+        <figcaption>max_ray_depth = 4 (CBbunny.dae)</figcaption>
+      </td>
+		<td>
+		<img src="https://cdn.discordapp.com/attachments/1217346917214716044/1217347054733627402/bunny_accum5.png?ex=6603b1cb&is=65f13ccb&hm=16e1d22dac88c54b8fee2580e1a9cdec78dd5aa4f34e005979a47d3d8ac373d3&" align="middle" width="400px"/>
+		<figcaption>max_ray_depth = 5 (CBbunny.dae)</figcaption>
+      </td>
+    </tr>
+  </table>
+</div>
+<br>
+
+<p>
+	Below are renders of CBbunny.dae with max_ray_depth set to 0, 1, 2, 3, and 100, using Russian Roulette with probability of 0.35.
+    Because we are using Russian Roulette rendering with factor 0.35 we will average about 3-4 bounces. But even without it bounces after 3-4 have minimal effect on the image, as seen in the previous example.
+	Because of all this the image at m=100 does not look too different.
+	We can conclude, that effect from bounces on this image after 4 bounces can be approximated by 0. 
+</p>
+<!-- Example of including multiple figures -->
+<div align="middle">
+  <table style="width:100%">
+    <tr align="center">
+      <td>
+        <img src="https://cdn.discordapp.com/attachments/1206889873798332446/1217340389724524584/bunny_rr0.png?ex=6603ab96&is=65f13696&hm=a92281bb1aa0926d8d9ba783230cb8f7ee272080fcec45c4a6d88f686e1df57b&" align="middle" width="400px"/>
+        <figcaption>max_ray_depth = 0 (CBbunny.dae)</figcaption>
+      </td>
+      <td>
+        <img src="https://cdn.discordapp.com/attachments/1206889873798332446/1217342986556411944/bunny_rr1.png?ex=6603ae01&is=65f13901&hm=363b76d66e3bf1e607537e8f01baefd759d2e0c02ea7bbe2e46d7f5b625ae1a9&" align="middle" width="400px"/>
+        <figcaption>max_ray_depth = 1 (CBbunny.dae)</figcaption>
+      </td>
+    </tr>
+    <tr align="center">
+      <td>
+        <img src="https://cdn.discordapp.com/attachments/1206889873798332446/1217345626732363856/bunny_rr2.png?ex=6603b076&is=65f13b76&hm=e62abe6cca2e35266971195422f00d909d0a72f9802d85527cf00d117322987d&" align="middle" width="400px"/>
+        <figcaption>max_ray_depth = 2 (CBbunny.dae)</figcaption>
+      </td>
+      <td>
+        <img src="https://cdn.discordapp.com/attachments/1206889873798332446/1217348645418958938/bunny_rr3.png?ex=6603b346&is=65f13e46&hm=9b0a9e6df26d667054ddcd0a17c56b751f23ab9fa4e7d5df09755ca4e7ed5938&" align="middle" width="400px"/>
+        <figcaption>max_ray_depth = 3 (CBbunny.dae)</figcaption>
+      </td>
+    </tr>
+    <tr align="center">
+      <td>
+        <img src="https://cdn.discordapp.com/attachments/1206889873798332446/1217349953840484422/bunny_rr4.png?ex=6603b47e&is=65f13f7e&hm=ee2c60fe2934a12fb0121795b7cf2edc5684af3dd26ffb69c462a5313a30685b&" align="middle" width="400px"/>
+        <figcaption>max_ray_depth = 100 (CBbunny.dae)</figcaption>
+      </td>
+    </tr>
+  </table>
+</div>
+<br>
+
+
+<h3>
+  Pick one scene and compare rendered views with various sample-per-pixel rates, including at least 1, 2, 4, 8, 16, 64, and 1024. Use 4 light rays.
+</h3>
+<p>
+	Below are renders of CBbunny.dae with sample-per-pixel rates 1, 2, 4, 8, 16, 64, and 1024 and using 4 light rays.
+    We are sending rays in random directions.
+	Because of this sometimes the ray might instantly hit light source or go out of the box and not hit anything, this is seen on 1 sample per pixel very well.
+	To combat such effect, we increase number of samples, this averages the pixel to it's true color.
+</p>
+<!-- Example of including multiple figures -->
+<div align="middle">
+  <table style="width:100%">
+    <tr align="center">
+      <td>
+        <img src="https://cdn.discordapp.com/attachments/1206889873798332446/1217355677262020609/bunny_samples1.png?ex=6603b9d2&is=65f144d2&hm=e4c8e6ac9f80f3a73e1081e82f254f05dd92b7ca546b4cd0f0f653f5d248e732&" align="middle" width="400px"/>
+        <figcaption>1 sample per pixel (example1.dae)</figcaption>
+      </td>
+      <td>
+        <img src="https://cdn.discordapp.com/attachments/1206889873798332446/1217355754684809246/bunny_samples2.png?ex=6603b9e5&is=65f144e5&hm=15fb0e20170c864fd53a58279262afcaf1cd777fb9d9d904c9524e7c26e4ab8d&" align="middle" width="400px"/>
+        <figcaption>2 samples per pixel (example1.dae)</figcaption>
+      </td>
+    </tr>
+    <tr align="center">
+      <td>
+        <img src="https://cdn.discordapp.com/attachments/1206889873798332446/1217355789077975070/bunny_samples4.png?ex=6603b9ed&is=65f144ed&hm=42e468e924931e7e1676a0a2c411e87946022db6aa720c9856810732a906dc64&" align="middle" width="400px"/>
+        <figcaption>4 samples per pixel (example1.dae)</figcaption>
+      </td>
+      <td>
+        <img src="https://cdn.discordapp.com/attachments/1206889873798332446/1217355821420384369/bunny_samples8.png?ex=6603b9f5&is=65f144f5&hm=7a308de6f0da9c5c2ff3dc35d84cd383d5371fb614744ad647b3dd23824bd4b2&" align="middle" width="400px"/>
+        <figcaption>8 samples per pixel (example1.dae)</figcaption>
+      </td>
+    </tr>
+    <tr align="center">
+      <td>
+        <img src="https://cdn.discordapp.com/attachments/1206889873798332446/1217355860813025364/bunny_samples16.png?ex=6603b9fe&is=65f144fe&hm=2581e0d8d86b855f9327c63587de594b8adaa3c6ec64145c58863ed915c8b21f&" align="middle" width="400px"/>
+        <figcaption>16 samples per pixel (example1.dae)</figcaption>
+      </td>
+      <td>
+        <img src="https://cdn.discordapp.com/attachments/1206889873798332446/1217355894023782480/bunny_samples64.png?ex=6603ba06&is=65f14506&hm=d5abc61f57a29831ef0a03870dd0f6ec310b2fe3b7c3eb5327b4002bdfbb034b&" align="middle" width="400px"/>
+        <figcaption>64 samples per pixel (example1.dae)</figcaption>
+      </td>
+    </tr>
+    <tr align="center">
+      <td>
+        <img src="https://cdn.discordapp.com/attachments/1206889873798332446/1217361739805622292/bunny_samples1024.png?ex=6603bf78&is=65f14a78&hm=1347cdcd334c8ce605277105dff71e40fa9448e567abe328f5fc940361f216b9&" align="middle" width="400px"/>
+        <figcaption>1024 samples per pixel (example1.dae)</figcaption>
+      </td>
+    </tr>
+  </table>
+</div>
+<br>
 
 <h3 align="middle">Part 5: Adaptive Sampling</h3>
 <p>
