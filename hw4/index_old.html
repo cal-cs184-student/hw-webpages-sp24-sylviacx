@@ -1,0 +1,171 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<style>
+  body {
+    padding: 100px;
+    width: 1000px;
+    margin: auto;
+    text-align: left;
+    font-weight: 300;
+    font-family: 'Open Sans', sans-serif;
+    color: #121212;
+  }
+  h1, h2, h3, h4 {
+    font-family: 'Source Sans Pro', sans-serif;
+  }
+</style>
+<title>CS 184/284A Rasterizer</title>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<link href="https://fonts.googleapis.com/css?family=Open+Sans|Source+Sans+Pro" rel="stylesheet">
+</head>
+
+
+<body>
+
+<h1 align="middle">CS 184/284A: Computer Graphics and Imaging, Spring 2024</h1>
+<h1 align="middle">Homework 4: Cloth Sim</h1>
+<h2 align="middle">Sylvia Chen, Artem Shumay</h2>
+<div align="middle"> 
+	<p><a href="https://cal-cs184-student.github.io/hw-webpages-sp24-sylviacx/hw4/index.html">https://cal-cs184-student.github.io/hw-webpages-sp24-sylviacx/hw4/index.html</a>
+	</p>
+</div>
+
+<br><br>
+
+<div>
+
+<h2 align="middle">Overview</h2>
+<p> We implemented a cloth simulation and several different shading models. 
+    We represented our cloth through a mesh grid of points and springs, then calculated the force enacted on each point by springs and other factors to calculate how each point in the cloth would fall.
+    We then handled collision with a sphere, a plane, and the cloth itself.
+    Finally we implemented diffuse, blinn-phong, bump, displacement, and mirror shaders to visualize all sorts of different textures.
+    This homework was especially interesting because it's our first assignment working with moving objects and it was really fun to see how each shader model completely changed the material of our objects. 
+</p>
+
+<h3 align="middle">Part 1: Masses and Springs</h3>
+
+<p>Below is a screenshot of our full wireframe, with all constraints: structural, shearing, and bending.</p>
+
+<div align="middle">
+	<table style="width:100%">
+	  <tr align="center">
+		<td>
+		  <img src="images/part1_wireframe1.png" align="middle" width="400px"/>
+		  <figcaption align="middle">Cloth wireframe</figcaption>
+		</td>
+		<td>
+			<img src="images/part1_wireframe2.png" align="middle" width="400px"/>
+			<figcaption align="middle">Zoomed in cloth wireframe</figcaption>
+		</td>
+	  </tr>
+	</table>
+</div>
+
+<p>Below are screenshots of our wireframe without any shearing constraints, with only shearing constraints, and will all constraints.</p>
+
+<div align="middle">
+	<table style="width:100%">
+	  <tr align="center">
+		<td>
+		  <img src="images/part1_no_shearing.png" align="middle" width="400px"/>
+		  <figcaption align="middle">No shearing</figcaption>
+		</td>
+		<td>
+			<img src="images/part1_only_shearing.png" align="middle" width="400px"/>
+			<figcaption align="middle">Only shearing</figcaption>
+		</td>
+    <td>
+		  <img src="images/part1_all.png" align="middle" width="400px"/>
+		  <figcaption align="middle">All constraints</figcaption>
+		</td>
+	  </tr>
+	</table>
+</div>
+
+<h3 align="middle">Part 2: Simulation via Numerical Integration </h3>
+
+<p>
+  From playing around with the simulation parameters, we have observed the following.
+
+  <li>ks</li>
+    <p>
+      With a very low ks = 1, the cloth looks much more fluid and stretchy, almost like a very thin silk. 
+      As it falls, it bounces back up a little bit when pulled by the pinned corners.
+      The cloth forms many creases at the top, and the 2 pinned corners seem to stretch out from gravity.
+      Even at rest, it constantly ripples, especially at edges and creases.
+      With a very high ks = 700, the cloth looks much more rigid, like a typical cotton cloth.
+      It forms only 2 creases at the top, and its pinned corners are not as stretched out by gravity.
+      At rest, it stays still and doesn't ripple like with ks = 1.
+    </p>
+
+    <div align="middle">
+      <table style="width:100%">
+        <tr align="center">
+        <td>
+          <img src="images/part2_ks1.png" align="middle" width="400px"/>
+          <figcaption align="middle">ks = 1</figcaption>
+        </td>
+        <td>
+          <img src="images/part2_ks700.png" align="middle" width="400px"/>
+          <figcaption align="middle">ks = 700</figcaption>
+        </td>
+        </tr>
+      </table>
+    </div>
+
+  <li>density</li>
+    <p>
+      With a very low density = 1, we see a similar result as observed with high ks, except the cloth is even more rigid.
+      Low density causes 1 crease to form at the top, and its pinned corners are not very stretched by gravity.
+      At rest, the cloth stays still and doesn't ripple.
+      With a very high density = 700, we see a similar result as observed with low ks, like a very thin silk.
+      As it falls, it bounces back up a little bit when pulled by the pinned corners.
+      Many creases form at the top, and the pinned corners are once again stretched by gravity.
+      At rest, the cloth constantly ripples, especially at edges and creases.
+    </p>
+
+    <div align="middle">
+      <table style="width:100%">
+        <tr align="center">
+        <td>
+          <img src="images/part2_density1" align="middle" width="400px"/>
+          <figcaption align="middle">density = 1</figcaption>
+        </td>
+        <td>
+          <img src="images/part2_density700.png" align="middle" width="400px"/>
+          <figcaption align="middle">density = 700</figcaption>
+        </td>
+        </tr>
+      </table>
+    </div>
+  
+  <li>damping</li>
+    <p>
+      With 0% damping, the cloth swings back and forth and takes a long time to reach a resting state.
+
+      With _% damping, the cloth just falls and doesn't swing back and forth, reaching resting state almost immediately.
+      High density causes many creases to form at the top, and the pinned corners are once again stretched by gravity.
+      At rest, the cloth constantly ripples, especially at edges and creases.
+    </p>
+
+    <div align="middle">
+      <table style="width:100%">
+        <tr align="center">
+        <td>
+          <img src="images/part2_density1" align="middle" width="400px"/>
+          <figcaption align="middle">density = 1</figcaption>
+        </td>
+        <td>
+          <img src="images/part2_density500.png" align="middle" width="400px"/>
+          <figcaption align="middle">density = 500</figcaption>
+        </td>
+        </tr>
+      </table>
+    </div>
+
+</p>
+
+
+
+</body>
